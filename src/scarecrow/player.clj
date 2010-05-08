@@ -53,6 +53,6 @@
     (doto panel
       (.setFocusable true)
       (.addKeyListener panel))
-    (assoc player :panel panel)
+    (dosync (ref-set (:panel player) panel))
     panel))
 

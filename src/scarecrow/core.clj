@@ -3,7 +3,7 @@
   (:import [javax.swing JFrame]))
 
 (defn -main []
-  (let [player (p/get-player {:width 640 :height 480})
+  (let [player (p/get-player {:width 640 :height 480 :padding [15 15 15 15]})
         frame (JFrame. "Scarecrow: Presentation with Clojure")]
     (doto frame
       (.add (:panel player))

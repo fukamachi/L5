@@ -43,10 +43,11 @@
         timer (Timer. 20 timer-handler)]
     (.start timer)
     {:panel (get-panel width height)
-     :slides slides
+     :slides (or slides [])
      :current (ref 0)
      :width width
      :height height
+     :padding (:padding params [0 0 0 0])
      :send-event #(.add event-queue %)
      :timer timer}))
 

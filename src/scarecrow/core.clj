@@ -3,11 +3,10 @@
   (:import [javax.swing JFrame]))
 
 (defn -main []
-  (let [player (p/make-player {:width 640 :height 480})
-        panel (p/add-panel player)
+  (let [player (p/get-player {:width 640 :height 480})
         frame (JFrame. "Scarecrow: Presentation with Clojure")]
     (doto frame
-      (.add panel)
+      (.add (:panel player))
       (.pack)
       (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
       (.setVisible true))))

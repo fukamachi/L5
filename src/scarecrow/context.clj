@@ -1,4 +1,4 @@
-(ns scarecrow.player
+(ns scarecrow.context
   (:use clojure.contrib.singleton)
   (:require [scarecrow.slide :as slide])
   (:import [java.awt Color Dimension Font]
@@ -6,9 +6,9 @@
            [java.awt.event KeyListener KeyEvent ActionListener]
            [javax.swing JPanel JFrame]))
 
-(declare get-player)
+(declare get-context)
 
-(def player (ref nil))
+(def *context* (ref nil))
 
 (def default
      {:width 640
@@ -16,13 +16,13 @@
       :padding [15 15 15 15]
       :font (Font. "VL Gothic" 0 20)})
 
-(defn dispatch-event [player keyCode]
+(defn dispatch-event [context keyCode]
   (cond
    (or (= keyCode KeyEvent/VK_BACK_SPACE)
-       (= keyCode KeyEvent/VK_LEFT)) (slide/prev-slide player)
+       (= keyCode KeyEvent/VK_LEFT)) (slide/prev-slide context)
    (or (= keyCode KeyEvent/VK_ENTER)
        (= keyCode KeyEvent/VK_SPACE)
-       (= keyCode KeyEvent/VK_RIGHT)) (slide/next-slide player)))
+       (= keyCode KeyEvent/VK_RIGHT)) (slide/next-slide context)))
 
 (defn- get-panel [width height]
   (let [buf (BufferedImage. width
@@ -31,14 +31,14 @@
         panel
         (proxy [JPanel KeyListener] []
           (getPreferredSize [] (Dimension. (.getWidth buf) (.getHeight buf)))
-          (keyPressed [e] (dispatch-event (get-player) (.getKeyCode e)))
+          (keyPressed [e] (dispatch-event (get-context) (.getKeyCode e)))
           (keyReleased [e])
           (keyTyped [e]))]
     (doto panel
       (.setFocusable true)
       (.addKeyListener panel))))
 
-(defn make-player [params & slides]
+(defn make-context [params & slides]
   (let [width (:width params)
         height (:height params)
         params (merge default params)]
@@ -50,11 +50,11 @@
      :padding (:padding params)
      :font (:font params)}))
 
-(defn get-player [& params]
-  (when (nil? @player)
-    (dosync (ref-set player (global-singleton #(make-player (first params))))))
-  (@player))
+(defn get-context [& params]
+  (when (nil? @*context*)
+    (dosync (ref-set *context* (global-singleton #(make-context (first params))))))
+  (@*context*))
 
-(defn start [player slides]
-  (dosync (ref-set (:slides player) slides))
-  (slide/current-slide player))
+(defn start [context slides]
+  (dosync (ref-set (:slides context) slides))
+  (slide/current-slide context))

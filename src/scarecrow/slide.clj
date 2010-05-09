@@ -3,25 +3,25 @@
            [java.awt.font LineBreakMeasurer TextAttribute]
            [java.text AttributedString]))
 
-(defn draw-slide [player idx]
-  ((get @(:slides player) idx)))
+(defn draw-slide [context idx]
+  ((get @(:slides context) idx)))
 
-(defn next-slide [player]
-  (let [slides @(:slides player)
-        idx (+ @(:current player) 1)]
+(defn next-slide [context]
+  (let [slides @(:slides context)
+        idx (+ @(:current context) 1)]
     (when (> (count slides) idx)
-      (draw-slide player idx)
-      (dosync (alter (:current player) inc)))))
+      (draw-slide context idx)
+      (dosync (alter (:current context) inc)))))
 
-(defn prev-slide [player]
-  (let [idx (- @(:current player) 1)]
+(defn prev-slide [context]
+  (let [idx (- @(:current context) 1)]
     (when (>= idx 0)
-      (draw-slide player idx)
-      (dosync (alter (:current player) dec)))))
+      (draw-slide context idx)
+      (dosync (alter (:current context) dec)))))
 
-(defn current-slide [player]
-  (let [idx @(:current player)]
-    (draw-slide player idx)))
+(defn current-slide [context]
+  (let [idx @(:current context)]
+    (draw-slide context idx)))
 
 (defn- get-width [width padding]
   (- width (padding 1) (padding 3)))
@@ -42,9 +42,9 @@
           (.draw layout g x-padding (+ y dy))
           (recur (+ y dy (.getDescent layout) (.getLeading layout))))))))
 
-(defn draw-text-with-player [player str]
-  (let [g (-> player :panel .getGraphics)
-        font (:font player)
-        width (:width player)
-        padding (:padding player)]
+(defn draw-text-with-context [context str]
+  (let [g (-> context :panel .getGraphics)
+        font (:font context)
+        width (:width context)
+        padding (:padding context)]
     (draw-text g str font width padding)))

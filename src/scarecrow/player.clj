@@ -43,7 +43,7 @@
         height (:height params)
         params (merge default params)]
     {:panel (get-panel width height)
-     :slides (or slides [])
+     :slides (ref (or slides []))
      :current (ref 0)
      :width (:width params)
      :height (:height params)
@@ -54,3 +54,7 @@
   (when (nil? @player)
     (dosync (ref-set player (global-singleton #(make-player (first params))))))
   (@player))
+
+(defn start [player slides]
+  (dosync (ref-set (:slides player) slides))
+  (slide/current-slide player))

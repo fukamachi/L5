@@ -1,11 +1,12 @@
 (ns scarecrow.player
   (:use clojure.contrib.singleton)
+  (:require [scarecrow.slide :as slide])
   (:import [java.awt Color Dimension Font]
            [java.awt.image BufferedImage]
            [java.awt.event KeyListener KeyEvent ActionListener]
            [javax.swing JPanel JFrame]))
 
-(declare prev-slide next-slide get-player)
+(declare get-player)
 
 (def player (ref nil))
 
@@ -15,22 +16,22 @@
       :padding [15 15 15 15]
       :font (Font. "VL Gothic" 0 20)})
 
-(defn- dispatch-event [keyCode]
+(defn dispatch-event [player keyCode]
   (cond
    (or (= keyCode KeyEvent/VK_BACK_SPACE)
-       (= keyCode KeyEvent/VK_LEFT)) (prev-slide)
+       (= keyCode KeyEvent/VK_LEFT)) (slide/prev-slide player)
    (or (= keyCode KeyEvent/VK_ENTER)
        (= keyCode KeyEvent/VK_SPACE)
-       (= keyCode KeyEvent/VK_RIGHT)) (next-slide)))
+       (= keyCode KeyEvent/VK_RIGHT)) (slide/next-slide player)))
 
 (defn- get-panel [width height]
-  (let [buf (ref (BufferedImage. width
-                                 height
-                                 BufferedImage/TYPE_4BYTE_ABGR))
+  (let [buf (BufferedImage. width
+                            height
+                            BufferedImage/TYPE_4BYTE_ABGR)
         panel
         (proxy [JPanel KeyListener] []
-          (getPreferredSize [] (Dimension. (.getWidth @buf) (.getHeight @buf)))
-          (keyPressed [e] (dispatch-event (.getKeyCode e)))
+          (getPreferredSize [] (Dimension. (.getWidth buf) (.getHeight buf)))
+          (keyPressed [e] (dispatch-event (get-player) (.getKeyCode e)))
           (keyReleased [e])
           (keyTyped [e]))]
     (doto panel
@@ -53,13 +54,3 @@
   (when (nil? @player)
     (dosync (ref-set player (global-singleton #(make-player (first params))))))
   (@player))
-
-(defn next-slide []
-  (println "next")
-  (let [player (get-player)]
-    (dosync (alter (:current player) inc))))
-
-(defn prev-slide []
-  (println "previous")
-  (let [player (get-player)]
-    (dosync (alter (:current player) dec))))

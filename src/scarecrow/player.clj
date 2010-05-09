@@ -3,8 +3,7 @@
   (:import [java.awt Color Dimension Font]
            [java.awt.image BufferedImage]
            [java.awt.event KeyListener KeyEvent ActionListener]
-           [javax.swing JPanel JFrame Timer]
-           [java.util.concurrent ConcurrentLinkedQueue]))
+           [javax.swing JPanel JFrame]))
 
 (declare prev-slide next-slide get-player)
 
@@ -31,7 +30,7 @@
         panel
         (proxy [JPanel KeyListener] []
           (getPreferredSize [] (Dimension. (.getWidth @buf) (.getHeight @buf)))
-          (keyPressed [e] ((:send-event (get-player)) (.getKeyCode e)))
+          (keyPressed [e] (dispatch-event (.getKeyCode e)))
           (keyReleased [e])
           (keyTyped [e]))]
     (doto panel
@@ -41,23 +40,14 @@
 (defn make-player [params & slides]
   (let [width (:width params)
         height (:height params)
-        event-queue (ConcurrentLinkedQueue.)
-        timer-handler
-        (proxy [ActionListener] []
-          (actionPerformed [e]
-            (dispatch-event (.poll event-queue))))
-        timer (Timer. 20 timer-handler)
         params (merge default params)]
-    (.start timer)
     {:panel (get-panel width height)
      :slides (or slides [])
      :current (ref 0)
      :width (:width params)
      :height (:height params)
      :padding (:padding params)
-     :font (:font params)
-     :send-event #(.add event-queue %)
-     :timer timer}))
+     :font (:font params)}))
 
 (defn get-player [& params]
   (when (nil? @player)

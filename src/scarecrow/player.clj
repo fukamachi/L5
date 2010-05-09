@@ -1,6 +1,6 @@
 (ns scarecrow.player
   (:use clojure.contrib.singleton)
-  (:import [java.awt Color Dimension]
+  (:import [java.awt Color Dimension Font]
            [java.awt.image BufferedImage]
            [java.awt.event KeyListener KeyEvent ActionListener]
            [javax.swing JPanel JFrame Timer]
@@ -9,6 +9,12 @@
 (declare prev-slide next-slide get-player)
 
 (def player (ref nil))
+
+(def default
+     {:width 640
+      :height 480
+      :padding [15 15 15 15]
+      :font (Font. "VL Gothic" 0 20)})
 
 (defn- dispatch-event [keyCode]
   (cond
@@ -40,14 +46,16 @@
         (proxy [ActionListener] []
           (actionPerformed [e]
             (dispatch-event (.poll event-queue))))
-        timer (Timer. 20 timer-handler)]
+        timer (Timer. 20 timer-handler)
+        params (merge default params)]
     (.start timer)
     {:panel (get-panel width height)
      :slides (or slides [])
      :current (ref 0)
-     :width width
-     :height height
-     :padding (:padding params [0 0 0 0])
+     :width (:width params)
+     :height (:height params)
+     :padding (:padding params)
+     :font (:font params)
      :send-event #(.add event-queue %)
      :timer timer}))
 

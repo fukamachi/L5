@@ -9,10 +9,14 @@
 (add-panel *context*)
 
 (def slides
-     [(fn [] (with-font (Font. "VL Gothic" 0 80)
-               (s/draw-lines "メロスは" "激怒" "した。")))
-      (fn [] (with-font (Font. "VL Gothic" 0 80)
-               (s/draw-lines "吾輩は" "猫である。" "名前は" "まだない。")))])
+     [(p (with {:font (Font. "VL Gothic" 0 80)}
+               (lines "メロスは" "激怒" "した。")))
+      (p (with {:font (Font. "VL Gothic" 0 80)}
+               (lines "吾輩は" "猫である。" "名前は" "まだない。")))
+      (p (with {:font (Font. "VL Gothic" 0 10)}
+               (fit "あ")))
+      (p (with {:font (Font. "VL Gothic" 0 30)}
+               (itemize "1個目" "2個目" "3個目")))])
 
 (defn -main []
   (let [frame (JFrame. "Scarecrow: Presentation with Clojure")]

@@ -1,6 +1,9 @@
 (ns scarecrow.layout
   (:require [scarecrow.slide :as slide]))
 
+(defmacro get-current-padding []
+  `(:padding ~'*context*))
+
 (defmacro get-next-padding [y]
   `(vec (cons ~y (-> ~'*context* :padding rest))))
 
@@ -18,7 +21,7 @@
 (defmacro with [params & body]
   `(with-local-context ~params (with-current-y ~@body)))
 
-(defmacro wrap [str]
+(defmacro txt [str]
   `(let [g# (.getGraphics @(:panel ~'*context*))
          font# (:font ~'*context*)
          width# (:width ~'*context*)
@@ -45,3 +48,14 @@
 
 (defmacro p [& body]
   `(fn [] (with-current-y ~@body)))
+
+(defmacro with-size [size & body]
+  `(with {:font (java.awt.Font. (-> ~'*context* :font .getFontName) 0 ~size)} ~@body))
+
+(defmacro with-padding [y & body]
+  `(with {:padding (get-next-padding (+ ((get-current-padding) 0) ~y))} ~@body))
+
+(defmacro title [str]
+  `(with {:font (java.awt.Font. (-> ~'*context* :font .getFontName) 0 50)
+          :height 80}
+         (fit ~str)))

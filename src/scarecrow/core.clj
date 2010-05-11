@@ -10,7 +10,9 @@
 
 (def slides
      [(p (with {:font (Font. "VL Gothic" 0 80)}
-               (lines "メロスは" "激怒" "した。")))
+               (lines "メロスは" "激怒" "した。"))
+         (with {:font (Font. "VL Gothic" 0 10)}
+               (lines "aaa")))
       (p (with {:font (Font. "VL Gothic" 0 80)}
                (lines "吾輩は" "猫である。" "名前は" "まだない。")))
       (p (with {:font (Font. "VL Gothic" 0 10)}

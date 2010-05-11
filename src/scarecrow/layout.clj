@@ -1,37 +1,42 @@
 (ns scarecrow.layout
   (:require [scarecrow.slide :as slide]))
 
-(defmacro with-context [& body]
-  `(-> ~'*context* ~@body))
-
 (defmacro with [params & body]
-  `(binding [~'*context* (merge ~'*context* ~params)]
-     (with-context ~@body)))
+  `(binding [~'*context* (merge ~'*context* ~params)] ~@body))
 
-(defn wrap [context str]
-  (let [g (.getGraphics @(:panel context))
-        font (:font context)
-        width (:width context)
-        padding (:padding context)]
-    (slide/draw-wrapped-text g str font width padding)))
+(defmacro wrap [str]
+  `(let [g# (.getGraphics @(:panel ~'*context*))
+         font# (:font ~'*context*)
+         width# (:width ~'*context*)
+         padding# (:padding ~'*context*)]
+     (slide/draw-wrapped-text g# ~str font# width# padding#)))
 
-(defn fit [context str]
-  (let [g (.getGraphics @(:panel context))
-        font (:font context)
-        width (:width context)
-        height (:height context)
-        padding (:padding context)]
-    (slide/draw-fitted-text g str font width height padding)))
+(defmacro fit [str]
+  `(let [g# (.getGraphics @(:panel ~'*context*))
+         font# (:font ~'*context*)
+         width# (:width ~'*context*)
+         height# (:height ~'*context*)
+         padding# (:padding ~'*context*)]
+     (slide/draw-fitted-text g# ~str font# width# height# padding#)))
 
-(defn lines [context & lines]
-  (let [g (.getGraphics @(:panel context))
-        font (:font context)
-        width (:width context)
-        padding (:padding context)]
-    (slide/draw-lines g lines font width padding)))
+(defmacro lines [& lines]
+  `(let [g# (.getGraphics @(:panel ~'*context*))
+         font# (:font ~'*context*)
+         width# (:width ~'*context*)
+         padding# (:padding ~'*context*)]
+     (slide/draw-lines g# (list ~@lines) font# width# padding#)))
 
-(defmacro itemize [context & lines]
-  `(lines ~context ~@(map #(str "・" %) lines)))
+(defmacro itemize [& lines]
+  `(lines ~@(map #(str "・" %) lines)))
+
+(defmacro get-next-padding [y]
+  `(let [pad# (-> ~'*context* :padding)]
+     (vec (cons (+ ~y (get pad# 0)) (rest pad#)))))
 
 (defmacro p [& body]
-  `(fn [] ~@body))
+  (let [y (gensym)]
+    `(fn [] (let [~y (ref ((:padding ~'*context*) 0))]
+       ~@(map (fn [b]
+                `(with {:padding (get-next-padding @~y)}
+                   (dosync (ref-set ~y ~b))))
+              body)))))

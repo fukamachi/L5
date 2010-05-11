@@ -85,22 +85,19 @@
         iter (.getIterator astr)
         measurer (LineBreakMeasurer. iter (.getFontRenderContext g))
         end-idx (.getEndIndex iter)
-        x-padding (get padding 3)
-        y-padding (get padding 0)]
-    (loop [y y-padding]
-      (if (>= (.getPosition measurer) end-idx)
-        nil
-        (let [layout (.nextLayout measurer wrap-width)
-              dy (.getAscent layout)]
-          (.draw layout g x-padding (+ y dy))
-          (recur (get-next-y y layout)))))))
+        x-padding (get padding 3)]
+    (loop [y (get padding 0)]
+      (if (>= (.getPosition measurer) end-idx) y
+          (let [layout (.nextLayout measurer wrap-width)]
+            (.draw layout g x-padding (+ y (.getAscent layout)))
+            (recur (get-next-y y layout)))))))
 
 (defn draw-lines [#^Graphics2D g, lines, font, width, padding]
   (let [x-pad (get padding 3)
         y-pad (get padding 0)]
     (loop [l lines, y y-pad]
       (let [line (first l)]
-        (when (not (nil? line))
-          (let [layout (get-text-layout g line font)]
-            (.draw layout g x-pad (+ y (.getAscent layout)))
-            (recur (rest l) (get-next-y y layout))))))))
+        (if (nil? line) y
+            (do (let [layout (get-text-layout g line font)]
+                  (.draw layout g x-pad (+ y (.getAscent layout)))
+                  (recur (rest l) (get-next-y y layout)))))))))

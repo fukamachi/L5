@@ -2,18 +2,17 @@
   (:require [scarecrow.slide :as slide]))
 
 (defmacro get-next-padding [y]
-  `(let [pad# (-> ~'*context* :padding)]
-     (vec (cons (+ ~y (get pad# 0)) (rest pad#)))))
+  `(vec (cons ~y (-> ~'*context* :padding rest))))
 
 (defmacro with-local-context [params & body]
   `(binding [~'*context* (merge ~'*context* ~params)] ~@body))
 
 (defmacro with-current-y [& body]
   (let [y (gensym)]
-    `(let [~y (ref 0)]
+    `(let [~y (ref (-> ~'*context* :padding (get 0)))]
        ~@(map (fn [b]
                 `(with-local-context {:padding (get-next-padding @~y)}
-                       (dosync (ref-set ~y ~b))))
+                   (dosync (ref-set ~y (+ ~b 15)))))
               body))))
 
 (defmacro with [params & body]

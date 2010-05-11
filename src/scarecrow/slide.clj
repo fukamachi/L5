@@ -69,15 +69,15 @@
       (.translate affine
                   (double (+ x-padding
                              (/ (- w (* scaling (.width bounds))) 2)))
-                  (double (+ y-padding
-                             (/ (- h (* scaling (.height bounds))) 2))))
+                  (double y-padding))
       (.scale affine scaling scaling)
       (.translate affine
                   (double (- (.x bounds)))
                   (double (- (.y bounds))))
       (.transform text-shape affine)
       (enable-anti-alias g)
-      (.fill g text-shape))))
+      (.fill g text-shape)
+      (double (+ y-padding (.height bounds))))))
 
 (defn draw-wrapped-text [#^Graphics2D g, str, font, width, padding]
   (let [wrap-width (get-width width padding)

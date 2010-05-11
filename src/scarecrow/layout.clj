@@ -1,8 +1,23 @@
 (ns scarecrow.layout
   (:require [scarecrow.slide :as slide]))
 
-(defmacro with [params & body]
+(defmacro get-next-padding [y]
+  `(let [pad# (-> ~'*context* :padding)]
+     (vec (cons (+ ~y (get pad# 0)) (rest pad#)))))
+
+(defmacro with-local-context [params & body]
   `(binding [~'*context* (merge ~'*context* ~params)] ~@body))
+
+(defmacro with-current-y [& body]
+  (let [y (gensym)]
+    `(let [~y (ref 0)]
+       ~@(map (fn [b]
+                `(with-local-context {:padding (get-next-padding @~y)}
+                       (dosync (ref-set ~y ~b))))
+              body))))
+
+(defmacro with [params & body]
+  `(with-local-context ~params (with-current-y ~@body)))
 
 (defmacro wrap [str]
   `(let [g# (.getGraphics @(:panel ~'*context*))
@@ -29,14 +44,5 @@
 (defmacro itemize [& lines]
   `(lines ~@(map #(str "・" %) lines)))
 
-(defmacro get-next-padding [y]
-  `(let [pad# (-> ~'*context* :padding)]
-     (vec (cons (+ ~y (get pad# 0)) (rest pad#)))))
-
 (defmacro p [& body]
-  (let [y (gensym)]
-    `(fn [] (let [~y (ref ((:padding ~'*context*) 0))]
-       ~@(map (fn [b]
-                `(with {:padding (get-next-padding @~y)}
-                   (dosync (ref-set ~y ~b))))
-              body)))))
+  `(fn [] (with-current-y ~@body)))

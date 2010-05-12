@@ -43,8 +43,13 @@
          padding# (:padding ~'*context*)]
      (slide/draw-lines g# (list ~@lines) font# width# padding#)))
 
-(defmacro itemize [& lines]
+(defmacro item [& lines]
   `(lines ~@(map #(str "・" %) lines)))
+
+(defmacro enum [& lines]
+  `(lines
+    ~@(for [[n l] (map list (range 0 (count lines)) lines)]
+        `(str ~n ". " ~l))))
 
 (defmacro p [& body]
   `(fn [] (with-current-y ~@body)))
@@ -59,3 +64,14 @@
   `(with {:font (java.awt.Font. (-> ~'*context* :font .getFontName) 0 50)
           :height 80}
          (fit ~str)))
+
+;; FIXME
+(defmacro title-page [& strs]
+  `(with-size 50
+     (with {:padding [150 80 80 80]}
+       ~@(map (fn [s] `(fit ~s)) strs))))
+
+;; FIXME
+(defmacro with-title [ttl & body]
+  `(with {}
+     (title ~ttl) ~@body))

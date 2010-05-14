@@ -19,22 +19,7 @@
        (= keyCode KeyEvent/VK_SPACE)
        (= keyCode KeyEvent/VK_RIGHT)) (slide/next-slide context)))
 
-(defn add-panel [context]
-  (let [buf (BufferedImage. (:width context)
-                            (:height context)
-                            BufferedImage/TYPE_4BYTE_ABGR)
-        panel
-        (proxy [JPanel KeyListener] []
-          (getPreferredSize [] (Dimension. (.getWidth buf) (.getHeight buf)))
-          (keyPressed [e] (dispatch-event context (.getKeyCode e)))
-          (keyReleased [e])
-          (keyTyped [e]))]
-    (doto panel
-      (.setFocusable true)
-      (.addKeyListener panel))
-    (dosync (ref-set (:panel context) panel))))
-
-(defn make-context [params & slides]
+(defn build-context [params & slides]
   (let [width (:width params)
         height (:height params)
         params (merge default params)]
@@ -46,9 +31,37 @@
      :padding (:padding params)
      :font (:font params)}))
 
-(defn context-set! [context key val]
+(defn build-panel [context]
+  (let [buf (BufferedImage. (:width context)
+                            (:height context)
+                            BufferedImage/TYPE_4BYTE_ABGR)
+        panel
+        (proxy [JPanel KeyListener] []
+          (getPreferredSize [] (Dimension. (.getWidth buf) (.getHeight buf)))
+          (keyPressed [e] (dispatch-event context (.getKeyCode e)))
+          (keyReleased [e])
+          (keyTyped [e]))]
+    (doto panel
+      (.setFocusable true)
+      (.addKeyListener panel))))
+
+(defn build-frame [panel]
+  (doto (JFrame. "Scarecrow: Presentation with Clojure")
+    (.add panel)
+    (.pack)
+    (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
+    (.setVisible true)))
+
+(defn map-set! [context key val]
   (dosync (ref-set (get context key) val)))
 
+(defn make-context [params]
+  (let [context (build-context params)
+        panel (build-panel context)
+        frame (build-frame panel)]
+    (map-set! context :panel panel)
+    (assoc context :frame frame)))
+
 (defn start [context slides]
-  (context-set! context :slides slides)
+  (map-set! context :slides slides)
   (slide/current-slide context))

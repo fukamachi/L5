@@ -8,7 +8,7 @@
   (let [slides @(:slides context)]
     (when (and slides (get slides idx))
       ((get slides idx))
-      (.repaint @(:panel context)))))
+      (.repaint @(:frame context)))))
 
 (defn current-slide [context]
   (let [idx @(:current context)]

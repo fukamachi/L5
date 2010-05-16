@@ -25,8 +25,7 @@
 
 (defn build-context [params & slides]
   (let [params (merge default params)]
-    {:panel (ref nil)
-     :g (ref nil)
+    {:g (ref nil)
      :frame (ref nil)
      :slides (ref (or slides []))
      :current (ref 0)
@@ -73,12 +72,10 @@
 
 (defn make-context [params]
   (let [context (build-context params)
-        panel (build-panel context)
-        frame (build-frame panel)]
-    (map-set! context :panel panel)
+        frame (-> context build-panel build-frame)]
     (map-set! context :frame frame)
     context))
 
 (defn start [context slides]
   (map-set! context :slides slides)
-  (.repaint @(:panel context)))
+  (.repaint @(:frame context)))

@@ -15,7 +15,7 @@
     `(let [~y (ref (-> ~'*context* :padding (get 0)))]
        ~@(map (fn [b]
                 `(with-local-context {:padding (get-next-padding @~y)}
-                   (dosync (ref-set ~y (+ ~b 15)))))
+                   (dosync (ref-set ~y ~b))))
               body))))
 
 (defmacro with [params & body]

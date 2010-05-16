@@ -96,7 +96,7 @@
       (.transform text-shape affine)
       (enable-anti-alias g)
       (.fill g text-shape)
-      (double (+ y-padding (.height bounds))))))
+      (double (+ y-padding (.. text-shape getBounds height))))))
 
 (defn draw-wrapped-text [#^Graphics2D g, str, font, width, padding]
   (let [wrap-width (get-width width padding)

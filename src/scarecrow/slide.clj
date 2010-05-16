@@ -1,13 +1,14 @@
 (ns scarecrow.slide
-  (:import [java.awt Graphics2D RenderingHints]
+  (:import [java.awt Graphics2D RenderingHints GraphicsEnvironment]
            [java.awt.font LineBreakMeasurer TextAttribute TextLayout]
            [java.awt.geom AffineTransform GeneralPath]
            [java.text AttributedString]))
 
 (defn draw-slide [context idx]
-  (let [panel @(:panel context)]
-    (.paintComponent panel (.getGraphics panel))
-    ((get @(:slides context) idx))))
+  (let [slides @(:slides context)]
+    (when (and slides (get slides idx))
+      ((get slides idx))
+      (.repaint @(:panel context)))))
 
 (defn current-slide [context]
   (let [idx @(:current context)]
@@ -45,6 +46,24 @@
     (.setRenderingHint
      RenderingHints/KEY_TEXT_ANTIALIASING
      RenderingHints/VALUE_TEXT_ANTIALIAS_ON)))
+
+(defn toggle-fullscreen [context]
+  (let [frame @(:frame context)
+        gdev
+        (.. GraphicsEnvironment
+            getLocalGraphicsEnvironment
+            getDefaultScreenDevice)]
+    (.hide frame)
+    (.removeNotify frame)
+    (if (.getFullScreenWindow gdev)
+      (do
+        (.setUndecorated frame false)
+        (.show frame)
+        (.setFullScreenWindow gdev nil))
+      (do
+        (.setUndecorated frame true)
+        (.show frame)
+        (.setFullScreenWindow gdev frame)))))
 
 (defn draw-fitted-text [#^Graphics2D g, str, font, width, height, padding]
   (let [astr (doto (AttributedString. str) (.addAttribute TextAttribute/FONT font))

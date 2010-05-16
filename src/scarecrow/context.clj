@@ -2,8 +2,11 @@
   (:require [scarecrow.slide :as slide])
   (:import [java.awt Color Dimension Font]
            [java.awt.image BufferedImage]
-           [java.awt.event KeyListener KeyEvent ActionListener]
+           [java.awt.event KeyListener KeyEvent ActionListener ComponentListener]
            [javax.swing JPanel JFrame]))
+
+(defn map-set! [context key val]
+  (dosync (ref-set (get context key) val)))
 
 (def default
      {:width 640
@@ -13,6 +16,7 @@
 
 (defn dispatch-event [context keyCode]
   (cond
+   (= keyCode KeyEvent/VK_F5) (slide/toggle-fullscreen context)
    (or (= keyCode KeyEvent/VK_BACK_SPACE)
        (= keyCode KeyEvent/VK_LEFT)) (slide/prev-slide context)
    (or (= keyCode KeyEvent/VK_ENTER)
@@ -20,10 +24,10 @@
        (= keyCode KeyEvent/VK_RIGHT)) (slide/next-slide context)))
 
 (defn build-context [params & slides]
-  (let [width (:width params)
-        height (:height params)
-        params (merge default params)]
+  (let [params (merge default params)]
     {:panel (ref nil)
+     :g (ref nil)
+     :frame (ref nil)
      :slides (ref (or slides []))
      :current (ref 0)
      :width (:width params)
@@ -32,18 +36,33 @@
      :font (:font params)}))
 
 (defn build-panel [context]
-  (let [buf (BufferedImage. (:width context)
-                            (:height context)
-                            BufferedImage/TYPE_4BYTE_ABGR)
+  (let [zoom (ref 1.0)
         panel
-        (proxy [JPanel KeyListener] []
-          (getPreferredSize [] (Dimension. (.getWidth buf) (.getHeight buf)))
+        (proxy [JPanel KeyListener ComponentListener] []
+          (getPreferredSize []
+                            (Dimension.
+                             (* @zoom (:width context))
+                             (* @zoom (:height context))))
+          (paintComponent [g]
+                          (when (:g context)
+                          (proxy-super paintComponent g)
+                          (.scale g @zoom @zoom)
+                          (map-set! context :g g)
+                          (slide/current-slide context)))
           (keyPressed [e] (dispatch-event context (.getKeyCode e)))
           (keyReleased [e])
-          (keyTyped [e]))]
+          (keyTyped [e])
+          (componentResized [e]
+                            (let [scale
+                                  (min (double (/ (.getWidth this) (:width context)))
+                                       (double (/ (.getHeight this) (:height context))))]
+                              (dosync (ref-set zoom scale)))
+                            (slide/current-slide context)
+                            (.repaint this)))]
     (doto panel
       (.setFocusable true)
-      (.addKeyListener panel))))
+      (.addKeyListener panel)
+      (.addComponentListener panel))))
 
 (defn build-frame [panel]
   (doto (JFrame. "Scarecrow: Presentation with Clojure")
@@ -52,16 +71,14 @@
     (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
     (.setVisible true)))
 
-(defn map-set! [context key val]
-  (dosync (ref-set (get context key) val)))
-
 (defn make-context [params]
   (let [context (build-context params)
         panel (build-panel context)
         frame (build-frame panel)]
     (map-set! context :panel panel)
-    (assoc context :frame frame)))
+    (map-set! context :frame frame)
+    context))
 
 (defn start [context slides]
   (map-set! context :slides slides)
-  (slide/current-slide context))
+  (.repaint @(:panel context)))

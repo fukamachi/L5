@@ -22,14 +22,14 @@
   `(with-local-context ~params (with-current-y ~@body)))
 
 (defmacro txt [str]
-  `(let [g# (.getGraphics @(:panel ~'*context*))
+  `(let [g# @(:g ~'*context*)
          font# (:font ~'*context*)
          width# (:width ~'*context*)
          padding# (:padding ~'*context*)]
      (slide/draw-wrapped-text g# ~str font# width# padding#)))
 
 (defmacro fit [str]
-  `(let [g# (.getGraphics @(:panel ~'*context*))
+  `(let [g# @(:g ~'*context*)
          font# (:font ~'*context*)
          width# (:width ~'*context*)
          height# (:height ~'*context*)
@@ -37,7 +37,7 @@
      (slide/draw-fitted-text g# ~str font# width# height# padding#)))
 
 (defmacro lines [& lines]
-  `(let [g# (.getGraphics @(:panel ~'*context*))
+  `(let [g# @(:g ~'*context*)
          font# (:font ~'*context*)
          width# (:width ~'*context*)
          padding# (:padding ~'*context*)]
@@ -61,8 +61,7 @@
   `(with {:padding (get-next-padding (+ ((get-current-padding) 0) ~y))} ~@body))
 
 (defmacro title [str]
-  `(with {:font (java.awt.Font. (-> ~'*context* :font .getFontName) 0 50)
-          :height 80}
+  `(with {:font (java.awt.Font. (-> ~'*context* :font .getFontName) 0 50)}
          (fit ~str)))
 
 ;; FIXME

@@ -28,13 +28,13 @@
          padding# (:padding ~'*context*)]
      (slide/draw-wrapped-text g# ~str font# width# padding#)))
 
-(defmacro fit [str]
+(defmacro fit [& strs]
   `(let [g# @(:g ~'*context*)
          font# (:font ~'*context*)
          width# (:width ~'*context*)
          height# (:height ~'*context*)
          padding# (:padding ~'*context*)]
-     (slide/draw-fitted-text g# ~str font# width# height# padding#)))
+     (slide/draw-fitted-text g# (vec ~@strs) font# width# height# padding#)))
 
 (defmacro lines [& lines]
   `(let [g# @(:g ~'*context*)
@@ -60,17 +60,19 @@
 (defmacro with-padding [y & body]
   `(with {:padding (get-next-padding (+ ((get-current-padding) 0) ~y))} ~@body))
 
-(defmacro title [str]
+(defmacro title [& str]
   `(with {:font (java.awt.Font. (-> ~'*context* :font .getFontName) 0 50)}
-         (fit ~str)))
+         (fit (list ~@str))))
 
 ;; FIXME
 (defmacro title-page [& strs]
-  `(with-size 50
-     (with {:padding [150 80 80 80]}
-       ~@(map (fn [s] `(fit ~s)) strs))))
+  `(with {:padding [50 30 100 30]} (fit (list ~@strs))))
 
 ;; FIXME
 (defmacro with-title [ttl & body]
-  `(with {}
-     (title ~ttl) ~@body))
+  `(with {:padding [20 20 420 20]}
+     (title ~ttl)
+     (with-padding 40 ~@body)))
+
+(defmacro th [& body]
+  `(with {:padding [100 100 100 100]} (fit (list ~@body))))

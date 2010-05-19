@@ -65,19 +65,23 @@
         (.show frame)
         (.setFullScreenWindow gdev frame)))))
 
-(defn draw-fitted-text [#^Graphics2D g, str, font, width, height, padding]
-  (let [astr (doto (AttributedString. str) (.addAttribute TextAttribute/FONT font))
+(defn draw-fitted-text [#^Graphics2D g, strs, font, width, height, padding]
+  (let [a-strs (map (fn [s]
+                      (doto (AttributedString. s)
+                        (.addAttribute TextAttribute/FONT font))) strs)
         text-shape (GeneralPath.)
-        iter (.getIterator astr)
+        frc (.getFontRenderContext g)
         x-padding (get padding 3)
-        y-padding (get padding 0)
-        layout (TextLayout. iter (.getFontRenderContext g))]
-    ;; build text-shape
-    (let [w (.getAdvance layout)
-          outline (.getOutline layout
-                               (AffineTransform/getTranslateInstance
-                                (double (- (/ w 2))) (double y-padding)))]
-      (.append text-shape outline false))
+        y-padding (get padding 0)]
+    (loop [y y-padding, layouts (map #(TextLayout. (.getIterator %) frc) a-strs)]
+      (when (not (empty? layouts))
+        (let [layout (first layouts)
+              w (.getAdvance layout)
+              outline (.getOutline layout
+                                   (AffineTransform/getTranslateInstance
+                                    (double (- (/ w 2))) (double y)))]
+          (.append text-shape outline false)
+          (recur (+ y (.getAscent layout)) (rest layouts)))))
     ;; scaling
     (let [bounds (.getBounds text-shape)
           w (- width (get padding 1) (get padding 3))

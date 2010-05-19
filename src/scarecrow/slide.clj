@@ -65,43 +65,56 @@
         (.show frame)
         (.setFullScreenWindow gdev frame)))))
 
-(defn draw-fitted-text [#^Graphics2D g, strs, font, width, height, padding]
-  (let [a-strs (map (fn [s]
-                      (doto (AttributedString. s)
-                        (.addAttribute TextAttribute/FONT font))) strs)
-        text-shape (GeneralPath.)
+(defn- to-astrs [strs font]
+  (map #(doto (AttributedString. %) (.addAttribute TextAttribute/FONT font)) strs))
+
+;; TODO
+(defn- build-str-shape [#^Graphics2D g, strs, font, y-padding]
+  (let [text-shape (GeneralPath.)
         frc (.getFontRenderContext g)
-        x-padding (get padding 3)
-        y-padding (get padding 0)]
+        a-strs (to-astrs strs font)]
     (loop [y y-padding, layouts (map #(TextLayout. (.getIterator %) frc) a-strs)]
-      (when (not (empty? layouts))
-        (let [layout (first layouts)
-              w (.getAdvance layout)
-              outline (.getOutline layout
-                                   (AffineTransform/getTranslateInstance
-                                    (double (- (/ w 2))) (double y)))]
-          (.append text-shape outline false)
-          (recur (+ y (.getAscent layout)) (rest layouts)))))
-    ;; scaling
-    (let [bounds (.getBounds text-shape)
-          w (- width (get padding 1) (get padding 3))
-          h (- height (get padding 0) (get padding 2))
-          scaling (double (min (/ w (.width bounds))
-                               (/ h (.height bounds))))
-          affine (AffineTransform.)]
-      (.translate affine
-                  (double (+ x-padding
+      (if (empty? layouts) text-shape
+          (do
+            (let [layout (first layouts)
+                  w (.getAdvance layout)
+                  outline (.getOutline layout
+                                       (AffineTransform/getTranslateInstance
+                                        (double (- (/ w 2))) (double y)))]
+              (.append text-shape outline false)
+              (recur (+ y (.getAscent layout)) (rest layouts))))))))
+
+(defn- calc-scale [bounds width height]
+  (double (min (/ width (.width bounds))
+               (/ height (.height bounds)))))
+
+(defn- build-affine [bounds width height padding]
+  (let [w (- width (get padding 1) (get padding 3))
+        h (- height (get padding 0) (get padding 2))
+        scaling (calc-scale bounds w h)
+        affine (AffineTransform.)]
+    (doto (AffineTransform.)
+      (.translate (double (+ (get padding 3)
                              (/ (- w (* scaling (.width bounds))) 2)))
-                  (double (+ y-padding
+                  (double (+ (get padding 0)
                              (/ (- h (* scaling (.height bounds))) 2))))
-      (.scale affine scaling scaling)
-      (.translate affine
-                  (double (- (.x bounds)))
-                  (double (- (.y bounds))))
-      (.transform text-shape affine)
-      (enable-anti-alias g)
-      (.fill g text-shape)
-      (double (+ y-padding (.. text-shape getBounds height))))))
+      (.scale scaling scaling)
+      (.translate (double (- (.x bounds)))
+                  (double (- (.y bounds)))))))
+
+;; TODO
+(defn draw-aligned-text []
+  "This is not implemented yet.")
+
+(defn draw-fitted-text [#^Graphics2D g, strs, font, width, height, padding]
+  (let [x-padding (get padding 3)
+        y-padding (get padding 0)
+        text-shape (build-str-shape g strs font y-padding)
+        affine (build-affine (.getBounds text-shape) width height padding)]
+    (.transform text-shape affine)
+    (enable-anti-alias g)
+    (.fill g text-shape)
+    (double (+ y-padding (.. text-shape getBounds height)))))
 
 (defn draw-wrapped-text [#^Graphics2D g, str, font, width, padding]
   (let [wrap-width (get-width width padding)

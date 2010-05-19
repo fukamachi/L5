@@ -92,7 +92,8 @@
       (.translate affine
                   (double (+ x-padding
                              (/ (- w (* scaling (.width bounds))) 2)))
-                  (double y-padding))
+                  (double (+ y-padding
+                             (/ (- h (* scaling (.height bounds))) 2))))
       (.scale affine scaling scaling)
       (.translate affine
                   (double (- (.x bounds)))
@@ -123,4 +124,4 @@
         (if (nil? line) y
             (do (let [layout (get-text-layout g line font)]
                   (.draw layout g x-pad (+ y (.getAscent layout)))
-                  (recur (rest l) (get-next-y y layout)))))))))
+                  (recur (rest l) (+ (/ (.getSize font) 2) (get-next-y y layout))))))))))

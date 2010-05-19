@@ -36,6 +36,8 @@
 
 (defn build-panel [context]
   (let [zoom (ref 1.0)
+        x (ref 0)
+        y (ref 0)
         panel
         (proxy [JPanel KeyListener ComponentListener] []
           (getPreferredSize []
@@ -46,16 +48,23 @@
                           (when (:g context)
                             (proxy-super paintComponent g)
                             (.scale g @zoom @zoom)
+                            (.translate g @x @y)
                             (map-set! context :g g)
                             (slide/current-slide context)))
           (keyPressed [e] (dispatch-event context (.getKeyCode e)))
           (keyReleased [e])
           (keyTyped [e])
           (componentResized [e]
-                            (let [scale
-                                  (min (double (/ (.getWidth this) (:width context)))
-                                       (double (/ (.getHeight this) (:height context))))]
-                              (dosync (ref-set zoom scale)))
+                            (let [width (.getWidth this)
+                                  height (.getHeight this)
+                                  scale (min (double (/ width (:width context)))
+                                             (double (/ height (:height context))))
+                                  width-diff (- width (* scale (:width context)))
+                                  height-diff (- height (* scale (:height context)))]
+                              (dosync
+                               (ref-set zoom scale)
+                               (ref-set x (/ width-diff 2 scale))
+                               (ref-set y (/ height-diff 2 scale))))
                             (slide/current-slide context)
                             (.repaint this)))]
     (doto panel

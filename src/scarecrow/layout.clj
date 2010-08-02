@@ -64,15 +64,5 @@
   `(with {:font (java.awt.Font. (-> ~'*context* :font .getFontName) 0 50)}
          (fit (list ~@str))))
 
-;; FIXME
-(defmacro title-page [& strs]
-  `(with {:padding [50 30 100 30]} (fit (list ~@strs))))
-
-;; FIXME
-(defmacro with-title [ttl & body]
-  `(with {:padding [20 20 420 20]}
-     (title ~ttl)
-     (with-padding 40 ~@body)))
-
 (defmacro th [& body]
   `(with {:padding [100 100 100 100]} (fit (list ~@body))))

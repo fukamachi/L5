@@ -76,7 +76,7 @@
   (doto (JFrame. "Scarecrow: Presentation with Clojure")
     (.add panel)
     (.pack)
-    (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
+    (.setDefaultCloseOperation JFrame/DISPOSE_ON_CLOSE)
     (.setVisible true)))
 
 (defn make-context [params]

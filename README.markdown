@@ -9,13 +9,15 @@ You may have to ensure [Leiningen](http://github.com/technomancy/leiningen) is i
     $ lein deps
     $ lein run presen
 
-## TODO
+## Roadmap
 
 * Write README
-* Set Background
-* Draw Images
-* Make JAR
-* Export PDF
+* Reload contents without restart
+* Indicate next slide to the console
+* To be able to set a background
+* To be able to draw images
+* Command line JAR
+* To be able to export slides to PDF
 * NicoTwitter
 
 ## Author & License

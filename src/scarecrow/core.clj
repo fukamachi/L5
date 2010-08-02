@@ -4,7 +4,7 @@
   (:require [scarecrow.slide :as s])
   (:import [java.awt Font]))
 
-(load-file "sample.clj")
+(load-file "init.clj")
 
 (defn -main []
   (start *context* slides))

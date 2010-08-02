@@ -2,7 +2,21 @@
 
 ## Usage
 
-## Installation
+You may have to ensure [Leiningen](http://github.com/technomancy/leiningen) is installed before.
+
+    $ git clone git://github.com/fukamachi/scarecrow
+    $ cd scarecrow
+    $ lein deps
+    $ lein run presen
+
+## TODO
+
+* Write README
+* Set Background
+* Draw Images
+* Make JAR
+* Export PDF
+* NicoTwitter
 
 ## Author & License
 

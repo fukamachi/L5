@@ -1,7 +1,6 @@
 (ns L5.context
   (:require [L5.slide :as slide])
   (:import [java.awt Color Dimension Font]
-           [java.awt.image BufferedImage]
            [java.awt.event KeyListener KeyEvent ActionListener ComponentListener]
            [javax.swing JPanel JFrame]))
 
@@ -28,6 +27,7 @@
     {:g (ref nil)
      :frame (ref nil)
      :slides (ref (or slides []))
+     :background-image (:background-image params)
      :current (ref 0)
      :width (:width params)
      :height (:height params)
@@ -47,6 +47,12 @@
           (paintComponent [g]
                           (when (:g context)
                             (proxy-super paintComponent g)
+                            ;; FIXME width is strange
+                            (let [img (:background-image context)]
+                              (when img
+                                (let [ws (/ (* @zoom (:width context)) (.getWidth img))
+                                      hs (/ (* @zoom (:height context)) (.getHeight img))]
+                                (.drawImage g img 0 0 (* (max ws hs) (.getWidth img)) (* (max ws hs) (.getHeight img)) nil))))
                             (.scale g @zoom @zoom)
                             (.translate g @x @y)
                             (map-set! context :g g)

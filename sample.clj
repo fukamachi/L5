@@ -1,6 +1,11 @@
+(import 'javax.imageio.ImageIO
+        'java.io.File
+        'java.awt.Color)
+
 (def *context* (make-context {:width 640 :height 480
                               :font (Font. "VL Gothic" 0 30)
-                              :background-image (.getImage (javax.swing.ImageIcon. "/Users/fukamachi/Dropbox/Photos/backgrounds/SleepingKitty_Hi.jpg"))}))
+                              :color (Color/white)
+                              :background-image (ImageIO/read (File. "jellyfish.jpg"))}))
 
 (defmacro title-page [& strs]
   `(with {:padding [50 30 100 30]} (fit (list ~@strs))))

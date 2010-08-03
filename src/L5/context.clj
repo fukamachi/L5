@@ -1,6 +1,7 @@
 (ns L5.context
+  (:use [clojure.contrib.math :only [abs]])
   (:require [L5.slide :as slide])
-  (:import [java.awt Color Dimension Font]
+  (:import [java.awt Dimension Font]
            [java.awt.event KeyListener KeyEvent ActionListener ComponentListener]
            [javax.swing JPanel JFrame]))
 
@@ -28,6 +29,7 @@
      :frame (ref nil)
      :slides (ref (or slides []))
      :background-image (:background-image params)
+     :color (:color params)
      :current (ref 0)
      :width (:width params)
      :height (:height params)
@@ -47,12 +49,13 @@
           (paintComponent [g]
                           (when (:g context)
                             (proxy-super paintComponent g)
-                            ;; FIXME width is strange
                             (let [img (:background-image context)]
                               (when img
-                                (let [ws (/ (* @zoom (:width context)) (.getWidth img))
-                                      hs (/ (* @zoom (:height context)) (.getHeight img))]
-                                (.drawImage g img 0 0 (* (max ws hs) (.getWidth img)) (* (max ws hs) (.getHeight img)) nil))))
+                                (let [scale-width (/ (.getWidth this) (.getWidth img))
+                                      scale-height (/ (.getHeight this) (.getHeight img))
+                                      scale (if (< (abs (- scale-width 1)) (abs (- scale-height 1))) scale-width scale-height)]
+                                  ; TODO: rafactoring
+                                  (.drawImage g img 0 0 (* scale (.getWidth img)) (* scale (.getHeight img)) nil))))
                             (.scale g @zoom @zoom)
                             (.translate g @x @y)
                             (map-set! context :g g)
@@ -75,6 +78,7 @@
                             (.repaint this)))]
     (doto panel
       (.setFocusable true)
+      (.setForeground (:color context))
       (.addKeyListener panel)
       (.addComponentListener panel))))
 

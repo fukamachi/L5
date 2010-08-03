@@ -1,5 +1,5 @@
-(ns scarecrow.layout
-  (:require [scarecrow.slide :as slide]))
+(ns L5.layout
+  (:require [L5.slide :as slide]))
 
 (defmacro get-current-padding []
   `(:padding ~'*context*))

@@ -1,4 +1,4 @@
-(ns scarecrow.slide
+(ns L5.slide
   (:import [java.awt Graphics2D RenderingHints GraphicsEnvironment]
            [java.awt.font LineBreakMeasurer TextAttribute TextLayout]
            [java.awt.geom AffineTransform GeneralPath]

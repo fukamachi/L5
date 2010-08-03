@@ -1,5 +1,5 @@
-(ns scarecrow.context
-  (:require [scarecrow.slide :as slide])
+(ns L5.context
+  (:require [L5.slide :as slide])
   (:import [java.awt Color Dimension Font]
            [java.awt.image BufferedImage]
            [java.awt.event KeyListener KeyEvent ActionListener ComponentListener]
@@ -73,7 +73,7 @@
       (.addComponentListener panel))))
 
 (defn build-frame [panel]
-  (doto (JFrame. "Scarecrow: Presentation with Clojure")
+  (doto (JFrame. "L5: Presentation with Clojure")
     (.add panel)
     (.pack)
     (.setDefaultCloseOperation JFrame/DISPOSE_ON_CLOSE)

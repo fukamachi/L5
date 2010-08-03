@@ -1,11 +1,11 @@
-# Scarecrow - Yet Another Presentation with Clojure
+# L5 - Yet Another Presentation with Clojure
 
 ## Usage
 
 You may have to ensure [Leiningen](http://github.com/technomancy/leiningen) is installed before.
 
-    $ git clone git://github.com/fukamachi/scarecrow
-    $ cd scarecrow
+    $ git clone git://github.com/fukamachi/L5
+    $ cd L5
     $ lein deps
     $ lein run presen
 

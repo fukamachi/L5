@@ -1,8 +1,8 @@
-(defproject scarecrow "1.0.0-SNAPSHOT"
+(defproject L5 "1.0.0-SNAPSHOT"
   :author "深町英太郎(E. Fukamachi)"
   :description "Yet Another Presentation with Clojure"
-  :url "http://github.com/fukamachi/scarecrow"
-  :run-aliases {:presen [scarecrow.core]}
+  :url "http://github.com/fukamachi/L5"
+  :run-aliases {:presen [L5.core]}
   :dependencies [[org.clojure/clojure "1.2.0-master-SNAPSHOT"]
                  [org.clojure/clojure-contrib "1.2.0-SNAPSHOT"]
                  [lein-run "1.0.0-SNAPSHOT"]]

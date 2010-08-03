@@ -88,19 +88,19 @@
   (double (min (/ width (.width bounds))
                (/ height (.height bounds)))))
 
-(defn- build-affine [bounds width height padding]
+(defn- build-scale-affine [bounds width height padding]
   (let [w (- width (get padding 1) (get padding 3))
         h (- height (get padding 0) (get padding 2))
         scaling (calc-scale bounds w h)
         affine (AffineTransform.)]
     (doto (AffineTransform.)
-      (.translate (double (+ (get padding 3)
-                             (/ (- w (* scaling (.width bounds))) 2)))
-                  (double (+ (get padding 0)
-                             (/ (- h (* scaling (.height bounds))) 2))))
-      (.scale scaling scaling)
-      (.translate (double (- (.x bounds)))
-                  (double (- (.y bounds)))))))
+      (.translate (double (- (+ (get padding 3)
+                                (/ (- w (* scaling (.width bounds))) 2))
+                             (* scaling (.x bounds))))
+                  (double (- (+ (get padding 0)
+                                (/ (- h (* scaling (.height bounds))) 2))
+                             (* scaling (.y bounds)))))
+      (.scale scaling scaling))))
 
 ;; TODO
 (defn draw-aligned-text []
@@ -110,7 +110,7 @@
   (let [x-padding (get padding 3)
         y-padding (get padding 0)
         text-shape (build-str-shape g strs font y-padding)
-        affine (build-affine (.getBounds text-shape) width height padding)]
+        affine (build-scale-affine (.getBounds text-shape) width height padding)]
     (.transform text-shape affine)
     (enable-anti-alias g)
     (.fill g text-shape)

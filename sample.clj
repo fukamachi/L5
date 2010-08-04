@@ -87,7 +87,7 @@
            (lines "・lambdaではなくfn"
                   "  (fn [to] (println \"Hello, \" to))"
                   "・さらにリードマクロで"
-                  "  #(println \"Hello, \" to)"
+                  "  #(println \"Hello, \" %)"
                   "・2乗の数リスト"
                   "  (map #(* % %) [1 2 3])"
                   "  → [1 4 6]")))

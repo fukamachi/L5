@@ -53,8 +53,8 @@
                               (when img
                                 (let [scale-width (/ (.getWidth this) (.getWidth img))
                                       scale-height (/ (.getHeight this) (.getHeight img))
-                                      scale (if (< (abs (- scale-width 1)) (abs (- scale-height 1))) scale-width scale-height)]
-                                  ; TODO: rafactoring
+                                      scale (max scale-width scale-height)]
+                                  ; TODO: refactoring
                                   (.drawImage g img 0 0 (* scale (.getWidth img)) (* scale (.getHeight img)) nil))))
                             (.scale g @zoom @zoom)
                             (.translate g @x @y)

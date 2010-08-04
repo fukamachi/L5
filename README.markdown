@@ -1,4 +1,4 @@
-# L5 - Yet Another Presentation with Clojure
+# L5 - Yet Another Presentation Tool for Lispers
 
 This application is a presentation tool written in Clojure. You can create slides with S-expression. See _sample.clj_ for example.
 

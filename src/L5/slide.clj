@@ -68,7 +68,6 @@
 (defn- to-astrs [strs font]
   (map #(doto (AttributedString. %) (.addAttribute TextAttribute/FONT font)) strs))
 
-;; TODO
 (defn- build-str-shape [#^Graphics2D g, strs, font, y-padding]
   (let [text-shape (GeneralPath.)
         frc (.getFontRenderContext g)
@@ -102,9 +101,11 @@
                              (* scaling (.y bounds)))))
       (.scale scaling scaling))))
 
-;; TODO
-(defn draw-aligned-text []
-  "This is not implemented yet.")
+;; FIXME: this cannot align left or right
+(defn draw-aligned-text [#^Graphics2D g, str, font, width, padding]
+  (let [layout (TextLayout. str font (.getFontRenderContext g))]
+    (.draw layout g (/ (- width (.getAdvance layout)) 2) (first padding))
+    (double (get-next-y (first padding) layout))))
 
 (defn draw-fitted-text [#^Graphics2D g, strs, font, width, height, padding]
   (let [x-padding (get padding 3)

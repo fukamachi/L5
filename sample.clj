@@ -8,7 +8,8 @@
                               :background-image (ImageIO/read (File. "jellyfish.jpg"))}))
 
 (defmacro title-page [& strs]
-  `(with {:padding [50 30 100 30]} (fit (list ~@strs))))
+  `(with-size 50
+     (with-padding 200 (center ~@strs))))
 
 (defmacro with-title [ttl & body]
   `(with {:padding [20 20 420 20]}
@@ -18,8 +19,8 @@
 (def slides
      [(p (title-page "JavaからClojure"
                      "そして夢の世界へ")
-         (with-size 20
-           (with-padding 160
+         (with-size 15
+           (with-padding 20
              (lines
               "アリエル・ネットワーク"
               "深町英太郎"

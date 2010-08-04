@@ -43,6 +43,20 @@
          padding# (:padding ~'*context*)]
      (slide/draw-lines g# (list ~@lines) font# width# padding#)))
 
+(defmacro center [& strs]
+  (let [g (gensym)
+        font (gensym)
+        width (gensym)
+        height (gensym)]
+    `(let [~g @(:g ~'*context*)
+           ~font (:font ~'*context*)
+           ~width (:width ~'*context*)
+           ~height (:height ~'*context*)]
+       (with-current-y
+         ~@(map
+             (fn [s] `(slide/draw-aligned-text ~g ~s ~font ~width (:padding ~'*context*)))
+             strs)))))
+
 (defmacro item [& lines]
   `(lines ~@(map #(str "・" %) lines)))
 

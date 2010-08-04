@@ -7,23 +7,21 @@
            [com.itextpdf.text Document Rectangle]
            [com.itextpdf.text.pdf PdfWriter]))
 
-(defn jframe->pdf [filename context all-slides]
+(defn jframe->pdf [filename context slides]
   (let [width (:width context)
         height (:height context)
         doc (Document. (Rectangle. width (- height 22)))
         writer (PdfWriter/getInstance doc (FileOutputStream. filename))]
     (.open doc)
     (let [cb (.getDirectContent writer)]
-      (loop [slides all-slides]
-        (when (first slides)
-          (let [tp (.createTemplate cb width height)
-                g2d (.createGraphics tp width height)]
-            (.update @(:frame context) g2d)
-            ((first slides))
-            (.dispose g2d)
-            (.addTemplate cb tp 0 0))
-          (.newPage doc)
-          (recur (rest slides)))))
+      (doseq [slide slides]
+        (let [tp (.createTemplate cb width height)
+              g2d (.createGraphics tp width height)]
+          (.update @(:frame context) g2d)
+          (slide)
+          (.dispose g2d)
+          (.addTemplate cb tp 0 0))
+        (.newPage doc)))
     (.close doc)))
 
 (load-file "init.clj")

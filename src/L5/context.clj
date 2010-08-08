@@ -86,8 +86,7 @@
   (doto (JFrame. "L5: Presentation with Clojure")
     (.add panel)
     (.pack)
-    (.setDefaultCloseOperation JFrame/DISPOSE_ON_CLOSE)
-    (.setVisible true)))
+    (.setDefaultCloseOperation JFrame/DISPOSE_ON_CLOSE)))
 
 (defn make-context [params]
   (let [context (build-context params)
@@ -97,4 +96,6 @@
 
 (defn start [context slides]
   (map-set! context :slides slides)
-  (.repaint @(:frame context)))
+  (doto @(:frame context)
+    (.repaint)
+    (.setVisible true)))

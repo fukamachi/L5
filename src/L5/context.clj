@@ -94,8 +94,7 @@
     (map-set! context :frame frame)
     context))
 
-(defn start [context slides]
-  (map-set! context :slides slides)
+(defn start [context]
   (doto @(:frame context)
     (.repaint)
     (.setVisible true)))

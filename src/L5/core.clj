@@ -1,13 +1,21 @@
 (ns L5.core
   (:use [L5.context :only [make-context start]]
-        L5.layout
-        clojure.contrib.server-socket)
-  (:require [L5.slide :as s])
-  (:import [java.awt Font]))
+        clojure.contrib.server-socket))
 
 (def *server-socket* (create-repl-server 12345 25))
 
-(load-file "init.clj")
+(def *context* (ref nil))
+
+(defmacro defcontext [params]
+  `(if (not (deref ~'*context*))
+     (dosync (ref-set ~'*context* (make-context ~params)))))
+
+(defmacro defslides [& slides]
+  `(dosync (ref-set (:slides (deref ~'*context*)) [~@slides])))
+
+(defn reload []
+  (load-file "init.clj"))
 
 (defn -main []
-  (start *context* slides))
+  (load-file "init.clj")
+  (start @*context*))

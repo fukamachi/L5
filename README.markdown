@@ -18,9 +18,9 @@ This application uses [lein-run](http://github.com/sids/lein-run), a plugin of L
 
     $ lein run presen
 
-Then the frame appears, press <Right> or <Space> to move to next and <Left> or <Backspace> to back. Press <F5> to toggle fullscreen mode.
+Then the frame appears, press [Right] or [Space] to move to next and [Left] or [Backspace] to back. Press [F5] to toggle fullscreen mode.
 
-You need not restart the frame when you modified slides. You should only press <R>, they reflect to the frame immediately.
+You need not restart the frame when you modified slides. You should only press [R], they reflect to the frame immediately.
 
 ## REPL
 

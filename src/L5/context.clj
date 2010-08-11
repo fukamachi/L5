@@ -17,6 +17,7 @@
 (defn dispatch-event [context keyCode]
   (cond
    (= keyCode KeyEvent/VK_F5) (slide/toggle-fullscreen context)
+   (= keyCode KeyEvent/VK_R) (load-file "init.clj")
    (or (= keyCode KeyEvent/VK_BACK_SPACE)
        (= keyCode KeyEvent/VK_LEFT)) (slide/prev-slide context)
    (or (= keyCode KeyEvent/VK_ENTER)

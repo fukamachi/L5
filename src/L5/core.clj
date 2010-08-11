@@ -13,9 +13,6 @@
 (defmacro defslides [& slides]
   `(dosync (ref-set (:slides (deref ~'*context*)) [~@slides])))
 
-(defn reload []
-  (load-file "init.clj"))
-
 (defn -main []
   (load-file "init.clj")
   (start @*context*))

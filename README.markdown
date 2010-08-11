@@ -18,6 +18,20 @@ This application uses [lein-run](http://github.com/sids/lein-run), a plugin of L
 
     $ lein run presen
 
+Then the frame appears, press <Right> or <Space> to move to next and <Left> or <Backspace> to back. Press <F5> to toggle fullscreen mode.
+
+You need not restart the frame when you modified slides. You should only press <R>, they reflect to the frame immediately.
+
+## REPL
+
+You can access to L5 during it running.
+
+    $ nc localhost 12345 25
+    clojure.core=> (ns L5.core)
+    nil
+    L5.core=> @(:current @*context*)
+    21
+
 ## Write slides
 
 See _init.clj_.
@@ -29,7 +43,6 @@ See _init.clj_.
 ## Roadmap
 
 * To be able to draw images
-* Reload contents without restart
 * Indicate next slide to the console
 * Command line JAR
 * NicoTwitter

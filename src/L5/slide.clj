@@ -2,7 +2,9 @@
   (:import [java.awt Graphics2D RenderingHints GraphicsEnvironment]
            [java.awt.font LineBreakMeasurer TextAttribute TextLayout]
            [java.awt.geom AffineTransform GeneralPath]
-           [java.text AttributedString]))
+           [java.text AttributedString]
+           [javax.imageio ImageIO]
+           [java.io File]))
 
 (defn draw-slide [context idx]
   (let [slides @(:slides context)]
@@ -139,3 +141,7 @@
             (do (let [layout (get-text-layout g line font)]
                   (.draw layout g x-pad (+ y (.getAscent layout)))
                   (recur (rest l) (+ (/ (.getSize font) 2) (get-next-y y layout))))))))))
+
+(defn draw-image [#^Graphics2D g, file, padding]
+  (let [image (ImageIO/read (File. file))]
+    (.drawImage g image (int (last padding)) (int (first padding)) nil)))

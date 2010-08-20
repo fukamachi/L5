@@ -36,6 +36,10 @@
   `(let [{g# :g font# :font width# :width padding# :padding} (context)]
      (slide/draw-lines @g# (list ~@strs) font# width# padding#)))
 
+(defmacro img [file]
+  `(let [{g# :g padding# :padding} (context)]
+     (slide/draw-image @g# ~file padding#)))
+
 (defmacro center [& strs]
   (with-gensyms [g font width height]
     `(let [{~g :g ~font :font ~width :width ~height :height} (context)]

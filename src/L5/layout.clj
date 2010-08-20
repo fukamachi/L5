@@ -3,8 +3,9 @@
 
 (defmacro context [] `(deref ~'*context*))
 
-(defmacro get-current-padding []
-  `(:padding (context)))
+(defmacro with-gensyms [names & body]
+  `(let ~(vec (mapcat (fn [n] [n `(gensym)]) names))
+     ~@body))
 
 (defmacro get-next-padding [y]
   `(vec (cons ~y (-> (context) :padding rest))))
@@ -24,39 +25,23 @@
   `(with-local-context ~params (with-current-y ~@body)))
 
 (defmacro txt [str]
-  `(let [g# @(:g (context))
-         font# (:font (context))
-         width# (:width (context))
-         padding# (:padding (context))]
-     (slide/draw-wrapped-text g# ~str font# width# padding#)))
+  `(let [{g# :g font# :font width# :width padding# :padding} (context)]
+     (slide/draw-wrapped-text @g# ~str font# width# padding#)))
 
 (defmacro fit [& strs]
-  `(let [g# @(:g (context))
-         font# (:font (context))
-         width# (:width (context))
-         height# (:height (context))
-         padding# (:padding (context))]
-     (slide/draw-fitted-text g# (vec ~@strs) font# width# height# padding#)))
+  `(let [{g# :g font# :font width# :width height# :height padding# :padding} (context)]
+     (slide/draw-fitted-text @g# (vec ~@strs) font# width# height# padding#)))
 
-(defmacro lines [& lines]
-  `(let [g# @(:g (context))
-         font# (:font (context))
-         width# (:width (context))
-         padding# (:padding (context))]
-     (slide/draw-lines g# (list ~@lines) font# width# padding#)))
+(defmacro lines [& strs]
+  `(let [{g# :g font# :font width# :width padding# :padding} (context)]
+     (slide/draw-lines @g# (list ~@strs) font# width# padding#)))
 
 (defmacro center [& strs]
-  (let [g (gensym)
-        font (gensym)
-        width (gensym)
-        height (gensym)]
-    `(let [~g @(:g (context))
-           ~font (:font (context))
-           ~width (:width (context))
-           ~height (:height (context))]
+  (with-gensyms [g font width height]
+    `(let [{~g :g ~font :font ~width :width ~height :height} (context)]
        (with-current-y
          ~@(map
-             (fn [s] `(slide/draw-aligned-text ~g ~s ~font ~width (:padding (context))))
+             (fn [s] `(slide/draw-aligned-text @~g ~s ~font ~width (:padding (context))))
              strs)))))
 
 (defmacro item [& lines]
@@ -74,7 +59,7 @@
   `(with {:font (java.awt.Font. (-> (context) :font .getFontName) 0 ~size)} ~@body))
 
 (defmacro with-padding [y & body]
-  `(with {:padding (get-next-padding (+ ((get-current-padding) 0) ~y))} ~@body))
+  `(with {:padding (get-next-padding (+ ((:padding (context)) 0) ~y))} ~@body))
 
 (defmacro title [& str]
   `(with {:font (java.awt.Font. (-> (context) :font .getFontName) 0 50)}

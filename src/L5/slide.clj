@@ -9,8 +9,7 @@
 (defn draw-slide [context idx]
   (let [slides @(:slides context)]
     (when (and slides (get slides idx))
-      ((get slides idx))
-      (.repaint @(:frame context)))))
+      ((get slides idx)))))
 
 (defn current-slide [context]
   (let [idx @(:current context)]

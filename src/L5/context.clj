@@ -21,7 +21,8 @@
        (= keyCode KeyEvent/VK_LEFT)) (slide/prev-slide context)
    (or (= keyCode KeyEvent/VK_ENTER)
        (= keyCode KeyEvent/VK_SPACE)
-       (= keyCode KeyEvent/VK_RIGHT)) (slide/next-slide context)))
+       (= keyCode KeyEvent/VK_RIGHT)) (slide/next-slide context))
+  (.repaint @(:frame context)))
 
 (defn build-context [params & slides]
   (let [params (merge default params)]
@@ -74,8 +75,7 @@
                                (ref-set zoom scale)
                                (ref-set x (/ width-diff 2 scale))
                                (ref-set y (/ height-diff 2 scale))))
-                            (slide/current-slide context)
-                            (.repaint this)))]
+                            (slide/current-slide context)))]
     (doto panel
       (.setFocusable true)
       (.setForeground (:color context))

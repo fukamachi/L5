@@ -1,8 +1,7 @@
 (ns L5.context
-  (:use [clojure.contrib.math :only [abs]])
   (:require [L5.slide :as slide])
   (:import [java.awt Dimension Font]
-           [java.awt.event KeyListener KeyEvent ActionListener ComponentListener]
+           [java.awt.event KeyListener KeyEvent ComponentListener]
            [javax.swing JPanel JFrame]))
 
 (defn map-set! [context key val]

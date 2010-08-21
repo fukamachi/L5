@@ -13,29 +13,37 @@
       :padding [15 15 15 15]
       :font (Font. "VL Gothic" 0 20)})
 
+(defmacro aif [expr then & [else]]
+  `(let [~'it ~expr]
+     (if ~'it ~then ~else)))
+
 (defn dispatch-event [context keyCode]
-  (cond
-   (= keyCode KeyEvent/VK_F5) (slide/toggle-fullscreen context)
-   (= keyCode KeyEvent/VK_R) (load-file "init.clj")
-   (or (= keyCode KeyEvent/VK_BACK_SPACE)
-       (= keyCode KeyEvent/VK_LEFT)) (slide/prev-slide context)
-   (or (= keyCode KeyEvent/VK_ENTER)
-       (= keyCode KeyEvent/VK_SPACE)
-       (= keyCode KeyEvent/VK_RIGHT)) (slide/next-slide context))
-  (.repaint @(:frame context)))
+  (aif (get @(:actions context) keyCode)
+       (and (it)
+            (.repaint @(:frame context)))))
 
 (defn build-context [params & slides]
-  (let [params (merge default params)]
-    {:g (ref nil)
-     :frame (ref nil)
-     :slides (ref (or slides []))
-     :background-image (:background-image params)
-     :color (:color params)
-     :current (ref 0)
-     :width (:width params)
-     :height (:height params)
-     :padding (:padding params)
-     :font (:font params)}))
+  (let [params (merge default params)
+        context {:g (ref nil)
+                 :frame (ref nil)
+                 :slides (ref (or slides []))
+                 :background-image (:background-image params)
+                 :color (:color params)
+                 :current (ref 0)
+                 :width (:width params)
+                 :height (:height params)
+                 :padding (:padding params)
+                 :font (:font params)
+                 :actions (ref nil)}]
+      (dosync (ref-set (:actions context)
+                       { KeyEvent/VK_F5         #(slide/toggle-fullscreen context)
+                         KeyEvent/VK_R          #(load-file "init.clj")
+                         KeyEvent/VK_BACK_SPACE #(slide/prev-slide context)
+                         KeyEvent/VK_LEFT       #(slide/prev-slide context)
+                         KeyEvent/VK_ENTER      #(slide/next-slide context)
+                         KeyEvent/VK_SPACE      #(slide/next-slide context)
+                         KeyEvent/VK_RIGHT      #(slide/next-slide context) }))
+      context))
 
 (defn build-panel [context]
   (let [zoom (ref 1.0)

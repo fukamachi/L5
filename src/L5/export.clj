@@ -10,7 +10,7 @@
 (defn jframe->pdf [filename context]
   (let [width (:width context)
         height (:height context)
-        doc (Document. (Rectangle. width (- height 22)))
+        doc (Document. (Rectangle. width height))
         writer (PdfWriter/getInstance doc (FileOutputStream. filename))]
     (.open doc)
     (let [cb (.getDirectContent writer)]

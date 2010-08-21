@@ -7,17 +7,17 @@
            [com.itextpdf.text Document Rectangle]
            [com.itextpdf.text.pdf PdfWriter]))
 
-(defn jframe->pdf [filename context slides]
+(defn jframe->pdf [filename context]
   (let [width (:width context)
         height (:height context)
         doc (Document. (Rectangle. width (- height 22)))
         writer (PdfWriter/getInstance doc (FileOutputStream. filename))]
     (.open doc)
     (let [cb (.getDirectContent writer)]
-      (doseq [slide slides]
+      (doseq [slide @(:slides context)]
         (let [tp (.createTemplate cb width height)
               g2d (.createGraphics tp width height)]
-          (.update @(:frame context) g2d)
+          (dosync (ref-set (:g context) g2d))
           (slide)
           (.dispose g2d)
           (.addTemplate cb tp 0 0))
@@ -27,5 +27,5 @@
 (load-file "init.clj")
 
 (defn -main [& [filename]]
-  (jframe->pdf (or filename "output.pdf") *context* slides)
+  (jframe->pdf (or filename "output.pdf") @L5.core/*context*)
   (System/exit 0))

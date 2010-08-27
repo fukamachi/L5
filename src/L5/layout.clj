@@ -1,6 +1,7 @@
 (ns L5.layout
   (:use L5)
-  (:require [L5.slide :as slide]))
+  (:require [L5.slide :as slide])
+  (:import java.awt.Font))
 
 (defmacro with-gensyms [names & body]
   `(let ~(vec (mapcat (fn [n] [n `(gensym)]) names))
@@ -59,13 +60,13 @@
   `(fn [] (with-current-y ~@body)))
 
 (defmacro with-size [size & body]
-  `(with {:font (java.awt.Font. (-> (context) :font .getFontName) 0 ~size)} ~@body))
+  `(with {:font (Font. (-> (context) :font .getFontName) 0 ~size)} ~@body))
 
 (defmacro with-padding [y & body]
   `(with {:padding (get-next-padding (+ ((:padding (context)) 0) ~y))} ~@body))
 
 (defmacro title [& str]
-  `(with {:font (java.awt.Font. (-> (context) :font .getFontName) 0 50)}
+  `(with {:font (Font. (-> (context) :font .getFontName) 0 50)}
          (fit (list ~@str))))
 
 (defmacro th [& body]

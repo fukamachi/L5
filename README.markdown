@@ -6,7 +6,7 @@ This application is a presentation tool written in Clojure. You can create slide
 
 You may have to ensure [Leiningen](http://github.com/technomancy/leiningen) is installed before.
 
-[Notice] I seems that Leiningen 1.2.0 or later has a problem with Mac OS X. This application is checked on ver 1.1.0. If you have found any problem about Leiningen, try to downgrade it.
+**[Notice]** I seems that Leiningen 1.2.0 or later has a problem with Mac OS X. This application is checked on ver 1.1.0. If you have found any problem about Leiningen, try to downgrade it.
 
 If you are ready, clone this repository and execute <code>lein deps</code>.
 
@@ -20,19 +20,20 @@ This application uses [lein-run](http://github.com/sids/lein-run), a plugin of L
 
     $ lein run presen
 
-Then the frame appears, press [Right] or [Space] to move to next and [Left] or [Backspace] to back. Press [F5] to toggle fullscreen mode.
+Then the frame appears, press &lt;Right&gt; or &lt;Space&gt; to move to next and &lt;Left&gt; or &lt;Backspace&gt; to back. Press &lt;F5&gt; to toggle fullscreen mode.
 
-You need not restart the frame when you modified slides. You should only press [R], they reflect to the frame immediately.
+You need not restart the frame when you modified slides. You should only press &lt;R&gt;, they reflect to the frame immediately.
 
 ## REPL
 
 You can access to L5 during it running.
 
-    $ nc localhost 12345 25
-    clojure.core=> (ns L5.core)
+    $ nc localhost 12345
+    clojure.core=> (ns L5)
     nil
-    L5.core=> @(:current @*context*)
-    21
+    L5=> (next-slide)
+    NEXT
+    L5=>
 
 ## Write slides
 
@@ -40,13 +41,13 @@ See _init.clj_.
 
 ## Export to PDF
 
-    $ lein run export output.pdf
+    $ lein run export
 
 ## Roadmap
 
 * Indicate next slide to the console
 * Command line JAR
-* NicoTwitter
+* Cooperation with Twitter
 
 ## Author & License
 

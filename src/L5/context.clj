@@ -34,6 +34,7 @@
                  :actions (ref nil)}]
       (dosync (ref-set (:actions context)
                        { KeyEvent/VK_F5         [#(slide/toggle-fullscreen context)]
+                         KeyEvent/VK_ESCAPE     [#(slide/fullscreen-off context)]
                          KeyEvent/VK_R          [#(load-file "init.clj")]
                          KeyEvent/VK_BACK_SPACE [#(slide/prev-slide context)]
                          KeyEvent/VK_LEFT       [#(slide/prev-slide context)]

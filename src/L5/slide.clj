@@ -48,23 +48,32 @@
      RenderingHints/KEY_TEXT_ANTIALIASING
      RenderingHints/VALUE_TEXT_ANTIALIAS_ON)))
 
-(defn toggle-fullscreen [context]
-  (let [frame @(:frame context)
-        gdev
-        (.. GraphicsEnvironment
-            getLocalGraphicsEnvironment
-            getDefaultScreenDevice)]
+(defn- get-gdev []
+  (.. GraphicsEnvironment
+      getLocalGraphicsEnvironment
+      getDefaultScreenDevice))
+
+(defn fullscreen-off [context]
+  (let [frame @(:frame context)]
     (.hide frame)
     (.removeNotify frame)
+    (.setUndecorated frame false)
+    (.show frame)
+    (.setFullScreenWindow (get-gdev) nil)))
+
+(defn fullscreen-on [context]
+  (let [frame @(:frame context)]
+    (.hide frame)
+    (.removeNotify frame)
+    (.setUndecorated frame true)
+    (.show frame)
+    (.setFullScreenWindow (get-gdev) frame)))
+
+(defn toggle-fullscreen [context]
+  (let [gdev (get-gdev)]
     (if (.getFullScreenWindow gdev)
-      (do
-        (.setUndecorated frame false)
-        (.show frame)
-        (.setFullScreenWindow gdev nil))
-      (do
-        (.setUndecorated frame true)
-        (.show frame)
-        (.setFullScreenWindow gdev frame)))))
+      (fullscreen-off context)
+      (fullscreen-on context))))
 
 (defn- to-astrs [strs font]
   (map #(doto (AttributedString. %) (.addAttribute TextAttribute/FONT font)) strs))

@@ -1,7 +1,14 @@
 (ns L5.layout
-  (:use L5)
-  (:require [L5.slide :as slide])
+  (:use [clojure.contrib.string :only [split trim blank?]]
+        L5)
+  (:require [clojure.contrib.string :as str]
+            [L5.slide :as slide])
   (:import java.awt.Font))
+
+(defn normalize-strings [& strs]
+  (remove blank?
+          (flatten
+           (map #(split #"[ \t]*\n[ \t]*" (trim %1)) strs))))
 
 (defmacro with-gensyms [names & body]
   `(let ~(vec (mapcat (fn [n] [n `(gensym)]) names))
@@ -24,21 +31,38 @@
 (defmacro with [params & body]
   `(with-local-context ~params (with-current-y ~@body)))
 
-(defmacro txt [str]
-  `(let [{g# :g font# :font width# :width padding# :padding} (context)]
-     (slide/draw-wrapped-text @g# ~str font# width# padding#)))
+(defmacro with-size [size & body]
+  `(with {:font (Font. (-> (context) :font .getFontName) 0 ~size)} ~@body))
 
-(defmacro fit [& strs]
-  `(let [{g# :g font# :font width# :width height# :height padding# :padding} (context)]
-     (slide/draw-fitted-text @g# (vec ~@strs) font# width# height# padding#)))
+(defmacro with-padding [y & body]
+  `(with {:padding (get-next-padding (+ ((:padding (context)) 0) ~y))} ~@body))
 
-(defmacro lines [& strs]
-  `(let [{g# :g font# :font width# :width padding# :padding} (context)]
-     (slide/draw-lines @g# (list ~@strs) font# width# padding#)))
+(defmacro p [& body]
+  `(fn [] (with-current-y ~@body)))
 
 (defmacro img [file]
   `(let [{g# :g padding# :padding} (context)]
      (slide/draw-image @g# ~file padding#)))
+
+(defmacro txt [& strs]
+  `(let [{g# :g font# :font width# :width padding# :padding} (context)]
+     (slide/draw-wrapped-text @g# (str ~@strs) font# width# padding#)))
+
+(defmacro fit [& strs]
+  `(let [{g# :g font# :font width# :width height# :height padding# :padding} (context)]
+     (slide/draw-fitted-text @g# [~@strs] font# width# height# padding#)))
+
+(defmacro lines [& strs]
+  `(let [{g# :g font# :font width# :width padding# :padding} (context)]
+     (slide/draw-lines @g# [~@strs] font# width# padding#)))
+
+(defmacro item [& strs]
+  `(lines ~@(map #(str "・" %) (apply normalize-strings strs))))
+
+(defmacro enum [& strs]
+  `(lines
+    ~@(for [[n l] (map list (range 0 (count strs)) (apply normalize-strings strs))]
+        `(str ~n ". " ~l))))
 
 (defmacro center [& strs]
   (with-gensyms [g font width height]
@@ -48,26 +72,5 @@
              (fn [s] `(slide/draw-aligned-text @~g ~s ~font ~width (:padding (context))))
              strs)))))
 
-(defmacro item [& lines]
-  `(lines ~@(map #(str "・" %) lines)))
-
-(defmacro enum [& lines]
-  `(lines
-    ~@(for [[n l] (map list (range 0 (count lines)) lines)]
-        `(str ~n ". " ~l))))
-
-(defmacro p [& body]
-  `(fn [] (with-current-y ~@body)))
-
-(defmacro with-size [size & body]
-  `(with {:font (Font. (-> (context) :font .getFontName) 0 ~size)} ~@body))
-
-(defmacro with-padding [y & body]
-  `(with {:padding (get-next-padding (+ ((:padding (context)) 0) ~y))} ~@body))
-
-(defmacro title [& str]
-  `(with {:font (Font. (-> (context) :font .getFontName) 0 50)}
-         (fit (list ~@str))))
-
-(defmacro th [& body]
-  `(with {:padding [100 100 100 100]} (fit (list ~@body))))
+(defmacro th [& strs]
+  `(with {:padding [100 100 100 100]} (fit ~@body)))

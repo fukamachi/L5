@@ -1,6 +1,5 @@
 (ns L5.sample
-  (:use L5
-        L5.layout)
+  (:use L5 L5.layout)
   (:import [java.awt Font Color]
            [javax.imageio ImageIO]
            [java.io File]))
@@ -17,7 +16,7 @@
 
 (defmacro with-title [ttl & body]
   `(with {:padding [20 20 420 20]}
-     (title ~ttl)
+     (fit ~ttl)
      (with-padding 40 ~@body)))
 
 (defslides

@@ -4,8 +4,8 @@
            [java.awt.event KeyListener KeyEvent ComponentListener]
            [javax.swing JPanel JFrame]))
 
-(defn map-set! [context key val]
-  (dosync (ref-set (get context key) val)))
+(defn map-set! [obj-map key val]
+  (dosync (ref-set (get obj-map key) val)))
 
 (def default
      {:width 640
@@ -91,6 +91,7 @@
       (.addComponentListener panel))))
 
 (defn build-frame [panel]
+  (.setOpaque panel false)
   (doto (JFrame. "L5: Presentation with Clojure")
     (.add panel)
     (.pack)

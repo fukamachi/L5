@@ -1,5 +1,5 @@
 (ns L5.sample
-  (:use L5.core
+  (:use L5
         L5.layout)
   (:import [java.awt Font Color]
            [javax.imageio ImageIO]

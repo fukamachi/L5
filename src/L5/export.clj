@@ -29,5 +29,5 @@
 (load-file "init.clj")
 
 (defn -main [& [filename]]
-  (jframe->pdf (or filename "output.pdf") @L5.core/*context*)
+  (jframe->pdf (or filename "output.pdf") @L5/*context*)
   (System/exit 0))

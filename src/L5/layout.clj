@@ -1,7 +1,6 @@
 (ns L5.layout
+  (:use L5)
   (:require [L5.slide :as slide]))
-
-(defmacro context [] `(deref ~'*context*))
 
 (defmacro with-gensyms [names & body]
   `(let ~(vec (mapcat (fn [n] [n `(gensym)]) names))

@@ -13,14 +13,11 @@
       :padding [15 15 15 15]
       :font (Font. "VL Gothic" 0 20)})
 
-(defmacro aif [expr then & [else]]
-  `(let [~'it ~expr]
-     (if ~'it ~then ~else)))
-
 (defn dispatch-event [context keyCode]
-  (aif (get @(:actions context) keyCode)
-       (and (it)
-            (.repaint @(:frame context)))))
+  (let [actions (get @(:actions context) keyCode)]
+    (when (not (empty? actions))
+      (doseq [act actions] (act))
+      (.repaint @(:frame context)))))
 
 (defn build-context [params & slides]
   (let [params (merge default params)
@@ -36,13 +33,13 @@
                  :font (:font params)
                  :actions (ref nil)}]
       (dosync (ref-set (:actions context)
-                       { KeyEvent/VK_F5         #(slide/toggle-fullscreen context)
-                         KeyEvent/VK_R          #(load-file "init.clj")
-                         KeyEvent/VK_BACK_SPACE #(slide/prev-slide context)
-                         KeyEvent/VK_LEFT       #(slide/prev-slide context)
-                         KeyEvent/VK_ENTER      #(slide/next-slide context)
-                         KeyEvent/VK_SPACE      #(slide/next-slide context)
-                         KeyEvent/VK_RIGHT      #(slide/next-slide context) }))
+                       { KeyEvent/VK_F5         [#(slide/toggle-fullscreen context)]
+                         KeyEvent/VK_R          [#(load-file "init.clj")]
+                         KeyEvent/VK_BACK_SPACE [#(slide/prev-slide context)]
+                         KeyEvent/VK_LEFT       [#(slide/prev-slide context)]
+                         KeyEvent/VK_ENTER      [#(slide/next-slide context)]
+                         KeyEvent/VK_SPACE      [#(slide/next-slide context)]
+                         KeyEvent/VK_RIGHT      [#(slide/next-slide context)] }))
       context))
 
 (defn build-panel [context]

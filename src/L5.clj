@@ -6,6 +6,10 @@
 
 (defn context [] @*context*)
 
+(defmacro aif [expr then & [else]]
+  `(let [~'it ~expr]
+     (if ~'it ~then ~else)))
+
 (defmacro defcontext [params]
   `(if (not @*context*)
      (dosync (ref-set *context* (make-context ~params)))))
@@ -31,3 +35,19 @@
 (defn toggle-fullscreen [] (slide/toggle-fullscreen (context)))
 
 (defn reload [] (load-file "init.clj"))
+
+(defn attach-event [code f]
+  (let [actions (:actions (context))
+        new-action (conj (or (get @actions code) []) f)]
+    (dosync
+     (ref-set actions
+              (assoc @actions code new-action)))))
+
+(defn detach-event [code f]
+  (let [actions (:actions (context))
+        new-action (aif (get @actions code)
+                        (remove #(= %1 f) it)
+                        [])]
+    (dosync
+     (ref-set actions
+              (assoc @actions code new-action)))))

@@ -10,20 +10,11 @@
    :color (Color/white)
    :background-image (ImageIO/read (File. "jellyfish.jpg"))})
 
-(defmacro title-page [& strs]
-  `(with-size 50
-     (with-padding 200 (center ~@strs))))
-
-(defmacro with-title [title & body]
-  `(with-padding [20 20 420 20]
-     (fit ~title)
-     (with-padding 40 ~@body)))
-
 (defslides
   (p (title-page "JavaからClojure"
                  "そして夢の世界へ")
      (with-size 15
-       (with-padding 20
+       (with-padding (get-next-padding 20)
          (lines
           "アリエル・ネットワーク"
           "深町英太郎"

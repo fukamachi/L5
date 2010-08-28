@@ -26,6 +26,7 @@
                  :slides (ref (or slides []))
                  :background-image (:background-image params)
                  :color (:color params)
+                 :background-color (:background-color params)
                  :current (ref 0)
                  :width (:width params)
                  :height (:height params)
@@ -85,11 +86,11 @@
     (doto panel
       (.setFocusable true)
       (.setForeground (:color context))
+      (.setBackground (:background-color context))
       (.addKeyListener panel)
       (.addComponentListener panel))))
 
 (defn build-frame [panel]
-  (.setOpaque panel false)
   (doto (JFrame. "L5: Presentation with Clojure")
     (.add panel)
     (.pack)

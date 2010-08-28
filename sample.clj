@@ -8,7 +8,7 @@
   {:width 640 :height 480
    :font (Font. "Gill Sans" 0 30)
    :color (Color/white)
-   :background-image (ImageIO/read (File. "jellyfish.jpg"))})
+   :background-color Color/darkGray})
 
 (defslides
   (p (title-page "JavaからClojure"

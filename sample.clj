@@ -14,9 +14,9 @@
   `(with-size 50
      (with-padding 200 (center ~@strs))))
 
-(defmacro with-title [ttl & body]
-  `(with {:padding [20 20 420 20]}
-     (fit ~ttl)
+(defmacro with-title [title & body]
+  `(with-padding [20 20 420 20]
+     (fit ~title)
      (with-padding 40 ~@body)))
 
 (defslides

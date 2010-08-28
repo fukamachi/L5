@@ -10,7 +10,7 @@
 (def default
      {:width 640
       :height 480
-      :padding [15 15 15 15]
+      :padding {:top 15, :right 15, :bottom 15, :left 15}
       :font (Font. "VL Gothic" 0 20)})
 
 (defn dispatch-event [context keyCode]

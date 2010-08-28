@@ -5,24 +5,30 @@
             [L5.slide :as slide])
   (:import java.awt.Font))
 
+(defmacro with-gensyms [names & body]
+  `(let ~(vec (mapcat (fn [n] [n `(gensym)]) names))
+     ~@body))
+
 (defn normalize-strings [& strs]
   (remove blank?
           (flatten
            (map #(split #"[ \t]*\n[ \t]*" (trim %1)) strs))))
 
-(defmacro with-gensyms [names & body]
-  `(let ~(vec (mapcat (fn [n] [n `(gensym)]) names))
-     ~@body))
+(defn get-next-padding [y]
+  (assoc (:padding (context)) :top y))
 
-(defmacro get-next-padding [y]
-  `(vec (cons ~y (-> (context) :padding rest))))
+(defn normalize-padding [padding]
+  (cond
+   (vector? padding) (zipmap [:top :right :bottom :left] padding)
+   (map? padding)    padding
+   :else (get-next-padding (+ (-> (context) :padding :top) padding))))
 
 (defmacro with-local-context [params & body]
   `(binding [~'*context* (ref (merge (context) ~params))] ~@body))
 
 (defmacro with-current-y [& body]
   (let [y (gensym)]
-    `(let [~y (ref (-> (context) :padding (get 0)))]
+    `(let [~y (ref (-> (context) :padding :top))]
        ~@(map (fn [b]
                 `(with-local-context {:padding (get-next-padding @~y)}
                    (dosync (ref-set ~y ~b))))
@@ -34,8 +40,10 @@
 (defmacro with-size [size & body]
   `(with {:font (Font. (-> (context) :font .getFontName) 0 ~size)} ~@body))
 
-(defmacro with-padding [y & body]
-  `(with {:padding (get-next-padding (+ ((:padding (context)) 0) ~y))} ~@body))
+(defmacro with-padding [padding & body]
+  `(with {:padding (normalize-padding ~padding)} ~@body))
+;(defmacro with-padding [y & body]
+;  `(with {:padding (get-next-padding (+ ((:padding (context)) 0) ~y))} ~@body))
 
 (defmacro p [& body]
   `(fn [] (with-current-y ~@body)))
@@ -73,4 +81,5 @@
              strs)))))
 
 (defmacro th [& strs]
-  `(with {:padding [100 100 100 100]} (fit ~@body)))
+  `(with-padding [100 100 100 100]
+     (fit ~@strs)))

@@ -31,7 +31,7 @@
       (dosync (alter (:current context) dec)))))
 
 (defn- get-width [width padding]
-  (- width (padding 1) (padding 3)))
+  (- width (:right padding) (:left padding)))
 
 (defn- get-next-y [y layout]
   (+ y (.getAscent layout) (.getDescent layout) (.getLeading layout)))
@@ -98,15 +98,15 @@
                (/ height (.height bounds)))))
 
 (defn- build-scale-affine [bounds width height padding]
-  (let [w (- width (get padding 1) (get padding 3))
-        h (- height (get padding 0) (get padding 2))
+  (let [w (- width (:right padding) (:left padding))
+        h (- height (:top padding) (:bottom padding))
         scaling (calc-scale bounds w h)
         affine (AffineTransform.)]
     (doto (AffineTransform.)
-      (.translate (double (- (+ (get padding 3)
+      (.translate (double (- (+ (:left padding)
                                 (/ (- w (* scaling (.width bounds))) 2))
                              (* scaling (.x bounds))))
-                  (double (- (+ (get padding 0)
+                  (double (- (+ (:top padding)
                                 (/ (- h (* scaling (.height bounds))) 2))
                              (* scaling (.y bounds)))))
       (.scale scaling scaling))))
@@ -114,12 +114,12 @@
 ;; FIXME: this cannot align left or right
 (defn draw-aligned-text [#^Graphics2D g, str, font, width, padding]
   (let [layout (TextLayout. str font (.getFontRenderContext g))]
-    (.draw layout g (/ (- width (.getAdvance layout)) 2) (first padding))
-    (double (get-next-y (first padding) layout))))
+    (.draw layout g (/ (- width (.getAdvance layout)) 2) (:top padding))
+    (double (get-next-y (:top padding) layout))))
 
 (defn draw-fitted-text [#^Graphics2D g, strs, font, width, height, padding]
-  (let [x-padding (get padding 3)
-        y-padding (get padding 0)
+  (let [x-padding (:left padding)
+        y-padding (:top padding)
         text-shape (build-str-shape g strs font y-padding)
         affine (build-scale-affine (.getBounds text-shape) width height padding)]
     (.transform text-shape affine)
@@ -133,16 +133,16 @@
         iter (.getIterator astr)
         measurer (LineBreakMeasurer. iter (.getFontRenderContext g))
         end-idx (.getEndIndex iter)
-        x-padding (get padding 3)]
-    (loop [y (get padding 0)]
+        x-padding (:left padding)]
+    (loop [y (:top padding)]
       (if (>= (.getPosition measurer) end-idx) y
           (let [layout (.nextLayout measurer wrap-width)]
             (.draw layout g x-padding (+ y (.getAscent layout)))
             (recur (get-next-y y layout)))))))
 
 (defn draw-lines [#^Graphics2D g, lines, font, width, padding]
-  (let [x-pad (get padding 3)
-        y-pad (get padding 0)]
+  (let [x-pad (:left padding)
+        y-pad (:top padding)]
     (loop [l lines, y y-pad]
       (let [line (first l)]
         (if (nil? line) y
@@ -152,4 +152,4 @@
 
 (defn draw-image [#^Graphics2D g, file, padding]
   (let [image (ImageIO/read (File. file))]
-    (.drawImage g image (int (last padding)) (int (first padding)) nil)))
+    (.drawImage g image (int (:left padding)) (int (:top padding)) nil)))

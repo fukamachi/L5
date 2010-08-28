@@ -156,14 +156,12 @@
             (recur (get-next-y y layout)))))))
 
 (defn draw-lines [#^Graphics2D g, lines, font, width, padding]
-  (let [x-pad (:left padding)
-        y-pad (:top padding)]
-    (loop [l lines, y y-pad]
-      (let [line (first l)]
-        (if (nil? line) y
-            (do (let [layout (get-text-layout g line font)]
-                  (.draw layout g x-pad (+ y (.getAscent layout)))
-                  (recur (rest l) (+ (/ (.getSize font) 2) (get-next-y y layout))))))))))
+  (loop [l lines, y (:top padding)]
+    (let [line (first l)]
+      (if (nil? line) y
+          (let [layout (get-text-layout g line font)]
+            (.draw layout g (:left padding) (+ y (.getAscent layout)))
+            (recur (rest l) (+ (/ (.getSize font) 2) (get-next-y y layout))))))))
 
 (defn draw-image [#^Graphics2D g, file, padding]
   (let [image (ImageIO/read (File. file))]

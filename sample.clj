@@ -36,7 +36,7 @@
              "Spring？ Tomcat？ なにそれ？"
              "オブジェクト指向？"
              "全部クラス？")))
-  (p (th "は？"))
+  (p (t "は？"))
   (p (with-title "OOP sucks"
        (item "Javaは全部オブジェクト"
              "データも手続きも全部オブジェクト"
@@ -48,7 +48,7 @@
              "クラス？ インスタンス？ インターフェイス？"
              "ハッシュとレキシカル関数で事足りる"
              "→Lispのサブセットの再発明")))
-  (p (th "なぜLispを" "使わないのですか？"))
+  (p (t "なぜLispを" "使わないのですか？"))
   (p (with-title "Lispの短所"
        (item "仕様に並列処理がない"
              "各処理系が独自実装"
@@ -61,9 +61,9 @@
              "豊富なライブラリ"
              "GC"
              "並列処理")))
-  (p (th "Javaのほうが" "実践的？"))
-  (p (th "いや、"))
-  (p (th "そこで" "\"Clojure\"ですよ"))
+  (p (t "Javaのほうが" "実践的？"))
+  (p (t "いや、"))
+  (p (t "そこで" "\"Clojure\"ですよ"))
   (p (with-title "\"Clojure\"とは"
        (item "JVMで動くLisp方言 (2008〜)"
              "バイトコードを吐ける"
@@ -123,8 +123,8 @@
               "ただし、パフォーマンスに大きく影響")))
   (p (with-title "副作用を使わないと"
        (lines "(reduce + (range 0 100))")))
-  (p (th "モダンLispツアー終了"))
-  (p (th "「Javaとの親和性は？」"))
+  (p (t "モダンLispツアー終了"))
+  (p (t "「Javaとの親和性は？」"))
   (p (with-title "Javaへのアクセス"
        (lines "・コード中でJavaのクラスを直接利用可"
               "  (def date (new java.util.Date))"
@@ -156,11 +156,11 @@
               "                       (proxy-super getYear))))]"
               "  (.getYear date))"
               "→ 2010")))
-  (p (th "Javaとの親和性ツアー終了"))
-  (p (th "ここまで聞いて"))
-  (p (th "「それ、Scalaでもできるよ」"))
-  (p (th "と思った" "そこのアナタ！"))
-  (p (th "Scalaって" "マクロ使えたっけ？"))
+  (p (t "Javaとの親和性ツアー終了"))
+  (p (t "ここまで聞いて"))
+  (p (t "「それ、Scalaでもできるよ」"))
+  (p (t "と思った" "そこのアナタ！"))
+  (p (t "Scalaって" "マクロ使えたっけ？"))
   (p (with-title "マクロ"
        (item "Clojureはマクロもサポート"
              "CL風のマクロが使える"
@@ -177,8 +177,8 @@
               "           mon# (+ 1 (.getMonth date#))"
               "           day# (.getDate date#)]"
               "       (str-join \"/\" [year# mon# day#])))")))
-  (p (th "マクロツアー終了"))
-  (p (th "ライブラリや開発環境は？"))
+  (p (t "マクロツアー終了"))
+  (p (t "ライブラリや開発環境は？"))
   (p (with-title "ライブラリ"
        (item "Javaのライブラリがそのまま利用"
              "→あまり困らない"
@@ -210,7 +210,7 @@
              "VimでSLIMEが使えるのはClojureだけ！")))
   (p (with-title "Eclipse"
        (item "あるらしいです")))
-  (p (th "Web関連"))
+  (p (t "Web関連"))
   (p (with-title "Compojure"
        (item "RubyのSinatraを模した軽量WAF"
              "ClojureのWAFのデファクト"
@@ -241,7 +241,7 @@
              "http://planet.clojure.in/"
              "@clojurism"
              "http://twitter.com/clojurism")))
-  (p (th "最後にちょっと" "Clojureの愚痴"))
+  (p (t "最後にちょっと" "Clojureの愚痴"))
   (p (with-title "1. 末尾再帰の最適化"
        (item "再帰できない"
              "末尾再帰でもできない"
@@ -258,5 +258,5 @@
        (item "Clojure"
              "clojars.org"
              "clojure-ja")))
-  (p (th "以上"))
+  (p (t "以上"))
   )

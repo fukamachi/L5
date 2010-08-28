@@ -85,6 +85,6 @@
   `(let [{g# :g font# :font width# :width height# :height padding# :padding} (context)]
      (slide/draw-aligned-text ~align @g# [~@strs] font# width# height# padding#)))
 
-(defmacro th [& strs]
+(defmacro t [& strs]
   `(with-padding [100 100 100 100]
      (fit ~@strs)))

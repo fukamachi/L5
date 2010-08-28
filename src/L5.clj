@@ -34,7 +34,7 @@
 
 (defn toggle-fullscreen [] (slide/toggle-fullscreen (context)))
 
-(defn reload [] (load-file "init.clj"))
+(defn reload [] (load-file "run.clj"))
 
 (defn attach-event [code f]
   (let [actions (:actions (context))

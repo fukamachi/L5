@@ -6,5 +6,5 @@
 (def *server-socket* (create-repl-server 12345 25))
 
 (defn -main []
-  (load-file "init.clj")
+  (load-file "run.clj")
   (start @L5/*context*))

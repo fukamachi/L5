@@ -26,7 +26,7 @@
         (.newPage doc)))
     (.close doc)))
 
-(load-file "init.clj")
+(load-file "run.clj")
 
 (defn -main [& [filename]]
   (jframe->pdf (or filename "output.pdf") @L5/*context*)

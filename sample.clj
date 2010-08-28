@@ -1,8 +1,6 @@
 (ns L5.sample
   (:use L5 L5.layout)
-  (:import [java.awt Font Color]
-           [javax.imageio ImageIO]
-           [java.io File]))
+  (:import [java.awt Font Color]))
 
 (defcontext
   {:width 640 :height 480

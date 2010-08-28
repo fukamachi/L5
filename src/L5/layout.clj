@@ -17,11 +17,15 @@
 (defn get-next-padding [y]
   (assoc (:padding (context)) :top y))
 
-(defn normalize-padding [padding]
-  (cond
-   (vector? padding) (zipmap [:top :right :bottom :left] padding)
-   (map? padding)    padding
-   :else (get-next-padding (+ (-> (context) :padding :top) padding))))
+(defmulti normalize-padding class)
+
+(defmethod normalize-padding clojure.lang.PersistentVector [padding]
+  (zipmap [:top :right :bottom :left] padding))
+
+(defmethod normalize-padding clojure.lang.PersistentArrayMap [padding] padding)
+
+(defmethod normalize-padding :default [padding]
+  (get-next-padding (+ (-> (context) :padding :top) padding)))
 
 (defmacro with-local-context [params & body]
   `(binding [~'*context* (ref (merge (context) ~params))] ~@body))

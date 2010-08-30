@@ -75,20 +75,34 @@
 (defn- to-astrs [strs font]
   (map #(doto (AttributedString. %) (.addAttribute TextAttribute/FONT font)) strs))
 
-(defn- build-str-shape [#^Graphics2D g, strs, font, width]
-  (let [text-shape (GeneralPath.)
-        frc (.getFontRenderContext g)
-        a-strs (to-astrs strs font)]
-    (loop [y 0, layouts (map #(TextLayout. (.getIterator %) frc) a-strs)]
-      (if (empty? layouts) text-shape
-          (let [layout (first layouts)
-                w (.getAdvance layout)
-                outline (.getOutline layout
-                                     ;; FIXME: always centerize this shape
-                                     (AffineTransform/getTranslateInstance
-                                      (double (/ (- width w) 2)) (double y)))]
-            (.append text-shape outline false)
-            (recur (+ y (.getAscent layout)) (rest layouts)))))))
+(defn affine-transform [[horizontal vertical] bounds width height]
+  [(case horizontal
+         :right (- (.width bounds) width)
+         :center 0
+         (.width bounds))
+   (case vertical
+         :bottom (- height (.height bounds))
+         :middle (/ height 2)
+         (.height bounds))])
+
+(defn- build-str-shape
+  ([#^Graphics2D g, strs, font, width] (build-str-shape g strs font width :left))
+  ([#^Graphics2D g, strs, font, width, h-align]
+     (let [text-shape (GeneralPath.)
+           frc (.getFontRenderContext g)
+           a-strs (to-astrs strs font)]
+       (loop [y 0, layouts (map #(TextLayout. (.getIterator %) frc) a-strs)]
+         (if (empty? layouts) text-shape
+             (let [layout (first layouts)
+                   x (case h-align
+                           :right (- (.getAdvance layout))
+                           :center (/ (- width (.getAdvance layout)) 2)
+                           0)
+                   outline (.getOutline layout
+                                        (AffineTransform/getTranslateInstance
+                                         (double x) (double y)))]
+               (.append text-shape outline false)
+               (recur (+ y (.getAscent layout)) (rest layouts))))))))
 
 (defn- calc-scale [bounds width height]
   (double (min (/ width (.width bounds))
@@ -116,24 +130,18 @@
 
 (defn draw-aligned-text [align, #^Graphics2D g, strs, font, width, height, padding]
   (let [[horizontal vertical] align
-        text-shape (build-str-shape g strs font width)
+        text-shape (build-str-shape g strs font width horizontal)
         bounds (.getBounds text-shape)
-        affine-x (case horizontal
-                   :right (+ (.width bounds) (- width (:right padding)))
-                   :center 0
-                   (+ (.width bounds) (:left padding)))
-        affine-y (case vertical
-                   :bottom (- height (:bottom padding) (.height bounds))
-                   :middle (/ height 2)
-                   (+ (.height bounds) (:top padding)))]
-    (double (+ affine-y
-               (draw-text-shape g text-shape
-                                (AffineTransform/getTranslateInstance
-                                 affine-x affine-y)
-                                padding)))))
+        [x y] (affine-transform align bounds
+                                (- width (:right padding) (:left padding))
+                                (- height (:top padding) (:bottom padding)))
+        [x y] [(+ x (:left padding)) (+ y (:top padding))]]
+    (double (+ y (draw-text-shape g text-shape
+                                  (AffineTransform/getTranslateInstance x y)
+                                  padding)))))
 
 (defn draw-fitted-text [#^Graphics2D g, strs, font, width, height, padding]
-  (let [text-shape (build-str-shape g strs font width); (:top padding))
+  (let [text-shape (build-str-shape g strs font width)
         affine (build-scale-affine (.getBounds text-shape) width height padding)]
     (draw-text-shape g text-shape affine padding)))
 

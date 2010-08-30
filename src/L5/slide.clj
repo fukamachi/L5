@@ -82,7 +82,7 @@
          (.width bounds))
    (case vertical
          :bottom (- height (.height bounds))
-         :middle (/ height 2)
+         :middle (/ (- height (.height bounds)) 2)
          (.height bounds))])
 
 (defn- build-str-shape
@@ -102,47 +102,44 @@
                                         (AffineTransform/getTranslateInstance
                                          (double x) (double y)))]
                (.append text-shape outline false)
-               (recur (+ y (.getAscent layout)) (rest layouts))))))))
+               (recur (+ (/ (.getSize font) 2) (.getAscent layout) y) (rest layouts))))))))
 
 (defn- calc-scale [bounds width height]
   (double (min (/ width (.width bounds))
                (/ height (.height bounds)))))
 
-(defn- build-scale-affine [bounds width height padding]
-  (let [w (- width (:right padding) (:left padding))
-        h (- height (:top padding) (:bottom padding))
-        scaling (calc-scale bounds w h)
+(defn- build-scale-affine [bounds width height]
+  (let [scaling (calc-scale bounds width height)
         affine (AffineTransform.)]
     (doto (AffineTransform.)
-      (.translate (double (- (+ (:left padding)
-                                (/ (- w (* scaling (.width bounds))) 2))
+      (.translate (double (- (/ (- width (* scaling (.width bounds))) 2)
                              (* scaling (.x bounds))))
-                  (double (- (+ (:top padding)
-                                (/ (- h (* scaling (.height bounds))) 2))
+                  (double (- (/ (- height (* scaling (.height bounds))) 2)
                              (* scaling (.y bounds)))))
       (.scale scaling scaling))))
 
 (defn- draw-text-shape [#^Graphics2D g, #^GeneralPath text-shape, affine, padding]
   (.transform text-shape affine)
+  (.transform text-shape (AffineTransform/getTranslateInstance (:left padding) (:top padding)))
   (enable-anti-alias g)
   (.fill g text-shape)
-  (.. text-shape getBounds height))
+  (+ (.. text-shape getBounds height) (:top padding) 15))
 
 (defn draw-aligned-text [align, #^Graphics2D g, strs, font, width, height, padding]
   (let [[horizontal vertical] align
         text-shape (build-str-shape g strs font width horizontal)
-        bounds (.getBounds text-shape)
-        [x y] (affine-transform align bounds
+        [x y] (affine-transform align (.getBounds text-shape)
                                 (- width (:right padding) (:left padding))
-                                (- height (:top padding) (:bottom padding)))
-        [x y] [(+ x (:left padding)) (+ y (:top padding))]]
+                                (- height (:top padding) (:bottom padding)))]
     (double (+ y (draw-text-shape g text-shape
                                   (AffineTransform/getTranslateInstance x y)
                                   padding)))))
 
 (defn draw-fitted-text [#^Graphics2D g, strs, font, width, height, padding]
   (let [text-shape (build-str-shape g strs font width)
-        affine (build-scale-affine (.getBounds text-shape) width height padding)]
+        affine (build-scale-affine (.getBounds text-shape)
+                                   (- width (:left padding) (:right padding))
+                                   (- height (:top padding) (:bottom padding)))]
     (draw-text-shape g text-shape affine padding)))
 
 (defn draw-wrapped-text [#^Graphics2D g, str, font, width, padding]
@@ -158,14 +155,9 @@
             (.draw layout g x-padding (+ y (.getAscent layout)))
             (recur (get-next-y y layout)))))))
 
-;; TODO: rewrite with GeneralPath
-(defn draw-lines [#^Graphics2D g, lines, font, width, padding]
-  (loop [l lines, y (:top padding)]
-    (let [line (first l)]
-      (if (nil? line) y
-          (let [layout (get-text-layout g line font)]
-            (.draw layout g (:left padding) (+ y (.getAscent layout)))
-            (recur (rest l) (+ (/ (.getSize font) 2) (get-next-y y layout))))))))
+(defn draw-lines [#^Graphics2D g, strs, font, width, padding]
+  (let [text-shape (build-str-shape g strs font width)]
+    (draw-text-shape g text-shape (AffineTransform/getTranslateInstance 0 0) padding)))
 
 (defn draw-image [#^Graphics2D g, file, padding]
   (let [image (ImageIO/read (File. file))]

@@ -1,5 +1,5 @@
 (ns L5.slide
-  (:import [java.awt Graphics2D RenderingHints GraphicsEnvironment]
+  (:import [java.awt Graphics2D Font RenderingHints GraphicsEnvironment]
            [java.awt.font LineBreakMeasurer TextAttribute TextLayout]
            [java.awt.geom AffineTransform GeneralPath]
            [java.text AttributedString]
@@ -123,7 +123,7 @@
   (.transform text-shape (AffineTransform/getTranslateInstance (:left padding) (:top padding)))
   (enable-anti-alias g)
   (.fill g text-shape)
-  (+ (.. text-shape getBounds height) (:top padding) 15))
+  (+ (.. text-shape getBounds height) (:top padding)))
 
 (defn draw-aligned-text [align, #^Graphics2D g, strs, font, width, height, padding]
   (let [[horizontal vertical] align
@@ -160,3 +160,15 @@
 (defn draw-image [#^Graphics2D g, file, padding]
   (let [image (ImageIO/read (File. file))]
     (.drawImage g image (int (:left padding)) (int (:top padding)) nil)))
+
+(defn draw [#^Graphics2D g, body, attr, width, height]
+  (let [font (Font. (:font-family attr) 0 (or (:font-size attr) 200))
+        padding (:padding attr)]
+    (cond
+     (instance? File body) (.drawImage g (ImageIO/read body) (:left padding) (:top padding) nil)
+     (nil? (:font-size attr))
+     (draw-fitted-text g body font width height padding)
+     (or (:text-align attr) (:vertical-align attr))
+     (draw-aligned-text [(:text-align attr) (:vertical-align attr)]
+                        g body font width height padding)
+     :else (draw-lines g body font width padding))))

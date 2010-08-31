@@ -52,14 +52,14 @@
   `(with-current-y
      (with-size (* 1.3 (-> (context) :font .getSize))
        (align [:center] ~title))
-     (with-padding (get-next-padding 5) ~@body)))
+     (with-padding (get-next-padding 20) ~@body)))
 
 (defmacro p [& body]
   `(fn [] (with-current-y ~@body)))
 
 (defmacro img [file]
-  `(let [{g# :g padding# :padding} (context)]
-     (slide/draw-image @g# ~file padding#)))
+  `(let [{g# :g width# :width height# :height padding# :padding} (context)]
+     (slide/draw @g# (File. ~file) {:padding padding#} width height)))
 
 (defmacro txt [& strs]
   `(let [{g# :g font# :font width# :width padding# :padding} (context)]
@@ -67,11 +67,19 @@
 
 (defmacro fit [& strs]
   `(let [{g# :g font# :font width# :width height# :height padding# :padding} (context)]
-     (slide/draw-fitted-text @g# [~@strs] font# width# height# padding#)))
+     (slide/draw @g# [~@strs]
+                 {:font-family (.getFamily font#)
+                  :font-size nil
+                  :padding padding#}
+                 width# height#)))
 
 (defmacro lines [& strs]
-  `(let [{g# :g font# :font width# :width padding# :padding} (context)]
-     (slide/draw-lines @g# [~@strs] font# width# padding#)))
+  `(let [{g# :g font# :font width# :width height# :height padding# :padding} (context)]
+     (slide/draw @g# [~@strs]
+                 {:font-family (.getFamily font#)
+                  :font-size (.getSize font#)
+                  :padding padding#}
+                 width# height#)))
 
 (defmacro item [& strs]
   `(lines ~@(map #(str "・" %) (apply normalize-strings strs))))
@@ -81,9 +89,15 @@
     ~@(for [[n l] (map list (range 0 (count strs)) (apply normalize-strings strs))]
         `(str ~n ". " ~l))))
 
-(defmacro align [align & strs]
+(defmacro align [[horizontal vertical] & strs]
   `(let [{g# :g font# :font width# :width height# :height padding# :padding} (context)]
-     (slide/draw-aligned-text ~align @g# [~@strs] font# width# height# padding#)))
+     (slide/draw @g# [~@strs]
+                 {:font-family (.getFamily font#)
+                  :font-size (.getSize font#)
+                  :text-align ~horizontal
+                  :vertical-align ~vertical
+                  :padding padding#}
+                 width# height#)))
 
 (defmacro t [& strs]
   `(with-padding [100 100 100 100]

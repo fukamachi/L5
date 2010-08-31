@@ -130,7 +130,7 @@
         text-shape (build-str-shape g strs font width horizontal)
         [x y] (affine-transform align (.getBounds text-shape) width height)]
     (double (+ y (draw-text-shape g text-shape
-                                  (AffineTransform/getTranslateInstance x y)
+                                  (AffineTransform/getTranslateInstance (- x (:left padding)) y)
                                   padding)))))
 
 (defn draw-fitted-text [#^Graphics2D g, strs, font, width, height, padding]

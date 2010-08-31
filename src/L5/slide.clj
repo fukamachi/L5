@@ -128,9 +128,7 @@
 (defn draw-aligned-text [align, #^Graphics2D g, strs, font, width, height, padding]
   (let [[horizontal vertical] align
         text-shape (build-str-shape g strs font width horizontal)
-        [x y] (affine-transform align (.getBounds text-shape)
-                                (- width (:right padding) (:left padding))
-                                (- height (:top padding) (:bottom padding)))]
+        [x y] (affine-transform align (.getBounds text-shape) width height)]
     (double (+ y (draw-text-shape g text-shape
                                   (AffineTransform/getTranslateInstance x y)
                                   padding)))))

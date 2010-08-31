@@ -135,19 +135,6 @@
                       (- width (:left padding) (:right padding))
                       (- height (:top padding) (:bottom padding))))
 
-(defn draw-wrapped-text [#^Graphics2D g, str, font, width, padding]
-  (let [wrap-width (- width (:right padding) (:left padding))
-        astr (doto (AttributedString. str) (.addAttribute TextAttribute/FONT font))
-        iter (.getIterator astr)
-        measurer (LineBreakMeasurer. iter (.getFontRenderContext g))
-        end-idx (.getEndIndex iter)
-        x-padding (:left padding)]
-    (loop [y (:top padding)]
-      (if (>= (.getPosition measurer) end-idx) y
-          (let [layout (.nextLayout measurer wrap-width)]
-            (.draw layout g x-padding (+ y (.getAscent layout)))
-            (recur (get-next-y y layout)))))))
-
 (defn draw [#^Graphics2D g, body, attr, width, height]
   (if (instance? File body) (.drawImage g (ImageIO/read body)
                                         (:left (:padding attr))

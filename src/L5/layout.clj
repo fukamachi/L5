@@ -61,10 +61,6 @@
   `(let [{g# :g width# :width height# :height padding# :padding} (context)]
      (slide/draw @g# (File. ~file) {:padding padding#} width height)))
 
-(defmacro txt [& strs]
-  `(let [{g# :g font# :font width# :width padding# :padding} (context)]
-     (slide/draw-wrapped-text @g# (str ~@strs) font# width# padding#)))
-
 (defmacro fit [& strs]
   `(let [{g# :g font# :font width# :width height# :height padding# :padding} (context)]
      (slide/draw @g# [~@strs]

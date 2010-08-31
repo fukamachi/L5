@@ -30,12 +30,6 @@
       (draw-slide context idx)
       (dosync (alter (:current context) dec)))))
 
-(defn- get-next-y [y layout]
-  (+ y (.getAscent layout) (.getDescent layout) (.getLeading layout)))
-
-(defn- get-text-layout [#^Graphics2D g, str, font]
-  (TextLayout. str font (.getFontRenderContext g)))
-
 (defn- enable-anti-alias [#^Graphics2D g]
   (doto g
     (.setRenderingHint

@@ -72,9 +72,6 @@
       (fullscreen-off context)
       (fullscreen-on context))))
 
-(defn- to-astrs [strs font]
-  (map #(doto (AttributedString. %) (.addAttribute TextAttribute/FONT font)) strs))
-
 (defn affine-transform [[horizontal vertical] bounds width height]
   [(case horizontal
          :right (- (.width bounds) width)
@@ -89,9 +86,8 @@
   ([#^Graphics2D g, strs, font, width] (build-str-shape g strs font width :left))
   ([#^Graphics2D g, strs, font, width, h-align]
      (let [text-shape (GeneralPath.)
-           frc (.getFontRenderContext g)
-           a-strs (to-astrs strs font)]
-       (loop [y 0, layouts (map #(TextLayout. (.getIterator %) frc) a-strs)]
+           frc (.getFontRenderContext g)]
+       (loop [y 0, layouts (map #(TextLayout. % font frc) strs)]
          (if (empty? layouts) text-shape
              (let [layout (first layouts)
                    x (case h-align
@@ -103,20 +99,6 @@
                                          (double x) (double y)))]
                (.append text-shape outline false)
                (recur (+ (/ (.getSize font) 2) (.getAscent layout) y) (rest layouts))))))))
-
-(defn- calc-scale [bounds width height]
-  (double (min (/ width (.width bounds))
-               (/ height (.height bounds)))))
-
-(defn- build-scale-affine [bounds width height]
-  (let [scaling (calc-scale bounds width height)
-        affine (AffineTransform.)]
-    (doto (AffineTransform.)
-      (.translate (double (- (/ (- width (* scaling (.width bounds))) 2)
-                             (* scaling (.x bounds))))
-                  (double (- (/ (- height (* scaling (.height bounds))) 2)
-                             (* scaling (.y bounds)))))
-      (.scale scaling scaling))))
 
 (defn- draw-text-shape [#^Graphics2D g, #^GeneralPath text-shape, affine, padding]
   (.transform text-shape affine)
@@ -131,9 +113,17 @@
     (AffineTransform/getTranslateInstance (- x (:left padding)) y)))
 
 (defn affine-fitted-text [bounds, width, height, padding]
-  (build-scale-affine bounds
-                      (- width (:left padding) (:right padding))
-                      (- height (:top padding) (:bottom padding))))
+  (let [w (- width (:left padding) (:right padding))
+        h (- height (:top padding) (:bottom padding))
+        scaling (double (min (/ w (.width bounds))
+                             (/ h (.height bounds))))
+        affine (AffineTransform.)]
+    (doto (AffineTransform.)
+      (.translate (double (- (/ (- w (* scaling (.width bounds))) 2)
+                             (* scaling (.x bounds))))
+                  (double (- (/ (- h (* scaling (.height bounds))) 2)
+                             (* scaling (.y bounds)))))
+      (.scale scaling scaling))))
 
 (defn draw [#^Graphics2D g, body, attr, width, height]
   (if (instance? File body) (.drawImage g (ImageIO/read body)

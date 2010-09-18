@@ -11,10 +11,10 @@
 (defslides
   [(t "JavaからClojure"
       "そして夢の世界へ")
-   {:attr {:font-size 15}
-    :body ["アリエル・ネットワーク"
-           "深町英太郎"
-           "2010/05/18"]}]
+   (elem {:attr {:font-size 15}
+          :body ["アリエル・ネットワーク"
+                 "深町英太郎"
+                 "2010/05/18"]})]
   [(title "自己紹介")
    (item "深町英太郎です"
          "Webプログラマ"
@@ -220,15 +220,15 @@
          "github.com/fukamachi/appengine-clj"
          "サーブレットはCompojureのdefroute")]
   [(title "コミュニティ")
-   ;(with-size 20
-   (item "本家Googleグループ"
-         "http://groups.google.com/group/clojure"
-         "clojure-ja"
-         "http://groups.google.com/group/clojure-ja"
-         "日本Clojureユーザ会(仮)"
-         "http://clojure-users.org/"
-         "逆引きClojure"
-         "http://rd.clojure-users.org/")]
+   (with-size 20
+     (item "本家Googleグループ"
+           "http://groups.google.com/group/clojure"
+           "clojure-ja"
+           "http://groups.google.com/group/clojure-ja"
+           "日本Clojureユーザ会(仮)"
+           "http://clojure-users.org/"
+           "逆引きClojure"
+           "http://rd.clojure-users.org/"))]
   [(title "Tokyo.clj")
    (item "毎月1回土曜にHackasonを開催"
          "次回のTokyo.clj#3は6/26"

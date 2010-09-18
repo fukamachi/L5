@@ -6,30 +6,6 @@
            [javax.imageio ImageIO]
            [java.io File]))
 
-(defn draw-slide [context idx]
-  (let [slides @(:slides context)]
-    (when (and slides (get slides idx))
-      ((get slides idx)))))
-
-(defn current-slide [context]
-  (let [idx @(:current context)]
-    (draw-slide context idx)))
-
-(defn next-slide [context]
-  (let [slides @(:slides context)
-        idx (+ @(:current context) 1)]
-    (when (> (count slides) idx)
-      (println "NEXT")
-      (draw-slide context idx)
-      (dosync (alter (:current context) inc)))))
-
-(defn prev-slide [context]
-  (let [idx (- @(:current context) 1)]
-    (when (>= idx 0)
-      (println "PREV")
-      (draw-slide context idx)
-      (dosync (alter (:current context) dec)))))
-
 (defn- enable-anti-alias [#^Graphics2D g]
   (doto g
     (.setRenderingHint
@@ -135,3 +111,54 @@
                                          bounds width height padding)
                     :else (AffineTransform/getTranslateInstance 0 0))]
         (draw-text-shape g text-shape affine padding))))
+
+(defn- get-next-attr [attr y]
+  (let [padding (:padding attr)]
+    (assoc attr :padding (assoc padding :top (+ y (or (:top padding) 0))))))
+
+(defn- normalize-attribute [context attr]
+  ;; TODO: refactor
+  (merge attr
+         {:padding (merge (:padding context) (:padding attr))
+          :font-family (if (contains? attr :font-family)
+                         (:font-family attr)
+                         (:font-family context))
+          :font-size (if (contains? attr :font-size)
+                       (:font-size attr)
+                       (-> context :font .getSize))}))
+
+(defn normalize-element [context {body :body attr :attr}]
+  {:body (if (vector? body) body [body])
+   :attr (normalize-attribute context attr)})
+
+(defn draw-slide [context idx]
+  (let [slides @(:slides context)]
+    (when (and @(:g context) slides (get slides idx))
+      (let [y (ref (-> context :padding :top))]
+        (doseq [elem (get slides idx)]
+          (let [elem (normalize-element context elem)
+                elem-y (draw @(:g context)
+                             (:body elem)
+                             (get-next-attr (:attr elem) @y)
+                             (:width context) (:height context))]
+            (dosync
+             (ref-set y elem-y))))))))
+
+(defn current-slide [context]
+  (let [idx @(:current context)]
+    (draw-slide context idx)))
+
+(defn next-slide [context]
+  (let [slides @(:slides context)
+        idx (+ @(:current context) 1)]
+    (when (> (count slides) idx)
+      (println "NEXT")
+      (draw-slide context idx)
+      (dosync (alter (:current context) inc)))))
+
+(defn prev-slide [context]
+  (let [idx (- @(:current context) 1)]
+    (when (>= idx 0)
+      (println "PREV")
+      (draw-slide context idx)
+      (dosync (alter (:current context) dec)))))

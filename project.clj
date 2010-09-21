@@ -4,12 +4,10 @@
   :url "http://github.com/fukamachi/L5"
   :main L5.core
   :run-aliases {:presen [L5.core -main], :export [L5.core -main "export"]}
-  :dependencies [[org.clojure/clojure "1.2.0-master-SNAPSHOT"]
-                 [org.clojure/clojure-contrib "1.2.0-SNAPSHOT"]
+  :dependencies [[org.clojure/clojure "1.2.0"]
+                 [org.clojure/clojure-contrib "1.2.0"]
                  [com.itextpdf/itextpdf "5.0.4"]]
   :dev-dependencies [[lein-run "1.0.0-SNAPSHOT"]
-                     [jline/jline "0.9.94"]
-                     [swank-clojure "1.2.0-SNAPSHOT"]
                      [lein-clojars "0.5.0"]]
   :repositories {"clojars" "http://clojars.org/repo"
                  "itextpdf" "http://maven.itextpdf.com/"})

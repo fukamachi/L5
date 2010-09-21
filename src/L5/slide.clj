@@ -87,7 +87,7 @@
 
 (defn affine-fitted-text [bounds, width, height, padding]
   (let [w (- width (:left padding) (:right padding))
-        h (- height (:top padding) (:bottom padding))
+        h (- height (:top padding) (:bottom padding) 22)
         scaling (double (min (/ w (.width bounds))
                              (/ h (.height bounds))))
         affine (AffineTransform.)]
@@ -102,7 +102,7 @@
   (if (instance? File body) (.drawImage g (ImageIO/read body)
                                         (:left (:padding attr))
                                         (:top (:padding attr)))
-      (let [font (Font. (:font-family attr) 0 (or (:font-size attr) 200))
+      (let [font (Font. (:font-family attr) 0 (or (:font-size attr) 300))
             padding (:padding attr)
             text-shape (build-str-shape g body font width (:text-align attr))
             bounds (.getBounds text-shape)

@@ -1,8 +1,11 @@
 (ns L5
+  (:use [clojure.contrib.string :only [replace-re]])
   (:require [L5.context :as context]
             [L5.export :as export]
-            [L5.slide :as slide]))
+            [L5.slide :as slide])
+  (:import [java.awt.event KeyEvent]))
 
+(def *run-file* (ref nil))
 (def *context* (ref nil))
 
 (defn context [] @*context*)
@@ -35,8 +38,6 @@
 
 (defn toggle-fullscreen [] (slide/toggle-fullscreen (context)))
 
-(defn reload [] (load-file "run.clj"))
-
 (defn attach-event [code f]
   (let [actions (:actions (context))
         new-action (conj (or (get @actions code) []) f)]
@@ -56,11 +57,16 @@
 (defn doelem [elem]
   (slide/normalize-element (context) elem))
 
-(defn export [& [output]]
+(defn reload [] (load-file @*run-file*))
+
+(defn export [& [input]]
+  (dosync (ref-set *run-file* input))
   (reload)
-  (export/jframe->pdf (or output "output.pdf") (context))
+  (export/jframe->pdf (str (replace-re #"\..+$" "" input) ".pdf") (context))
   (System/exit 0))
 
-(defn start []
+(defn start [file]
+  (dosync (ref-set *run-file* file))
   (reload)
+  (attach-event KeyEvent/VK_R #(reload))
   (context/start (context)))

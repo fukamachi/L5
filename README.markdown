@@ -16,7 +16,7 @@ If you are ready, clone this repository and execute <code>lein deps</code>.
 
 This application uses [lein-run](http://github.com/sids/lein-run), a plugin of Leiningen, Thanks sids!
 
-    $ lein run presen
+    $ lein run presen <your-slide.clj>
 
 Then the frame appears, press &lt;Right&gt; or &lt;Space&gt; to move to next and &lt;Left&gt; or &lt;Backspace&gt; to back. Press &lt;F5&gt; to toggle fullscreen mode.
 
@@ -39,7 +39,7 @@ See _run.clj_.
 
 ## Export to PDF
 
-    $ lein run export
+    $ lein run export <your-slide.clj>
 
 ## Roadmap
 

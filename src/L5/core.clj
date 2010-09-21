@@ -5,7 +5,7 @@
 
 (def *server-socket* (create-repl-server 12345 25))
 
-(defn -main [& [cmd]]
-  (if (= cmd "export")
-    (export)
-    (start)))
+(defn -main [& args]
+  (if (= "export" (first args))
+    (export (or (second args) "run.clj"))
+    (start (or (first args) "run.clj"))))

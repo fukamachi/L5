@@ -1,6 +1,6 @@
 (ns L5.context
   (:require [L5.slide :as slide])
-  (:import [java.awt Dimension Font]
+  (:import [java.awt Dimension]
            [java.awt.event KeyListener KeyEvent ComponentListener]
            [javax.swing JPanel JFrame]))
 
@@ -11,7 +11,8 @@
      {:width 640
       :height 480
       :padding {:top 20, :right 20, :bottom 20, :left 20}
-      :font (Font. "VL Gothic" 0 20)})
+      :font-family "VL Gothic"
+      :font-size 20})
 
 (defn dispatch-event [context keyCode]
   (let [actions (get @(:actions context) keyCode)]
@@ -31,7 +32,8 @@
                  :width (:width params)
                  :height (:height params)
                  :padding (:padding params)
-                 :font (:font params)
+                 :font-size (:font-size params)
+                 :font-family (:font-family params)
                  :actions (ref nil)}]
       (dosync (ref-set (:actions context)
                        { KeyEvent/VK_F5         [#(slide/toggle-fullscreen context)]

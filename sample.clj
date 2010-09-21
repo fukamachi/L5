@@ -1,10 +1,11 @@
 (ns L5.sample
   (:use L5 L5.layout)
-  (:import [java.awt Font Color]))
+  (:import [java.awt Color]))
 
 (defcontext
   {:width 640 :height 480
-   :font (Font. "Gill Sans" 0 30)
+   :font-family "Gill Sans"
+   :font-size 30
    :color (Color/white)
    :background-color Color/darkGray})
 

@@ -120,12 +120,10 @@
   ;; TODO: refactor
   (merge attr
          {:padding (merge (:padding context) (:padding attr))
-          :font-family (if (contains? attr :font-family)
-                         (:font-family attr)
-                         (-> context :font .getFamily))
+          :font-family (or (:font-family attr) (:font-family context))
           :font-size (if (contains? attr :font-size)
                        (:font-size attr)
-                       (-> context :font .getSize))}))
+                       (:font-size context))}))
 
 ;; NOTE: I want to put this at L5.clj, but it refers to this namespace.
 ;;       Need a namespace for utilities?

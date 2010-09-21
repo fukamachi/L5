@@ -2,8 +2,7 @@
   (:use [clojure.contrib.string :only [split trim blank?]]
         L5)
   (:require [clojure.contrib.string :as str]
-            [L5.slide :as slide])
-  (:import java.awt.Font))
+            [L5.slide :as slide]))
 
 (defn normalize-strings [& strs]
   (remove blank?
@@ -15,12 +14,12 @@
      ~@(map (fn [e] `(doelem ~e)) body)))
 
 (defmacro with-size [size & body]
-  `(with {:font (Font. (-> (context) :font .getFontName) 0 ~size)} ~@body))
+  `(with {:font-size ~size} ~@body))
 
 (defn img [file] (java.io.File. file))
 
 (defmacro title [& strs]
-  `{:attr {:font-size (* 1.3 (-> (context) :font .getSize))
+  `{:attr {:font-size (* 1.3 (:font-size (context)))
            :text-align :center}
     :body [~@strs]})
 

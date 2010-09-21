@@ -16,6 +16,9 @@
 (defmacro with-size [size & body]
   `(with {:font-size ~size} ~@body))
 
+(defmacro with-padding [padding & body]
+  `(with {:padding ~padding} ~@body))
+
 (defn img [file]
   {:body (java.io.File. file)})
 

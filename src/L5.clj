@@ -51,3 +51,6 @@
     (dosync
      (ref-set actions
               (assoc @actions code new-action)))))
+
+(defn doelem [elem]
+  (slide/normalize-element (context) elem))

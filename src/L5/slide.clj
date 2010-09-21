@@ -116,12 +116,30 @@
   (let [padding (:padding attr)]
     (assoc attr :padding (assoc padding :top (+ y (or (:top padding) 0))))))
 
+(defn- normalize-attribute [context attr]
+  ;; TODO: refactor
+  (merge attr
+         {:padding (merge (:padding context) (:padding attr))
+          :font-family (if (contains? attr :font-family)
+                         (:font-family attr)
+                         (:font-family context))
+          :font-size (if (contains? attr :font-size)
+                       (:font-size attr)
+                       (-> context :font .getSize))}))
+
+;; NOTE: I want to put this at L5.clj, but it refers to this namespace.
+;;       Need a namespace for utilities?
+(defn normalize-element [context {body :body attr :attr}]
+  {:body (if (vector? body) body [body])
+   :attr (normalize-attribute context attr)})
+
 (defn draw-slide [context idx]
   (let [slides @(:slides context)]
     (when (and @(:g context) slides (get slides idx))
       (let [y (ref (-> context :padding :top))]
         (doseq [elem (get slides idx)]
-          (let [elem-y (draw @(:g context)
+          (let [elem (normalize-element context elem)
+                elem-y (draw @(:g context)
                              (:body elem)
                              (get-next-attr (:attr elem) @y)
                              (:width context) (:height context))]

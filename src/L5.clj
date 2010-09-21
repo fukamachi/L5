@@ -3,11 +3,14 @@
         clojure.contrib.server-socket)
   (:require [L5.context :as context]
             [L5.export :as export]
-            [L5.slide :as slide])
-  (:import [java.awt.event KeyEvent]))
+            [L5.slide :as slide]
+            [L5.file :as file])
+  (:import [java.awt.event KeyEvent]
+           [javax.swing JOptionPane]))
 
 (def *run-file* (ref nil))
 (def *context* (ref nil))
+(def *server-socket* (ref nil))
 
 (defn context [] @*context*)
 
@@ -60,15 +63,28 @@
 
 (defn reload [] (load-file @*run-file*))
 
-(defn export [& [input]]
-  (dosync (ref-set *run-file* input))
+(defn go [n]
+  (dosync (ref-set (:current (context)) n))
+  (repaint))
+
+(defn export [& [output]]
   (reload)
-  (export/jframe->pdf (str (replace-re #"\..+$" "" input) ".pdf") (context))
-  (System/exit 0))
+  (go 0)
+  (export/jframe->pdf output (context))
+  (go 0)
+  (println "Export Complete!")
+  (JOptionPane/showMessageDialog @(:frame (context)) "Export Complete!"))
 
 (defn start [file]
-  (def *server-socket* (create-repl-server 12345 25))
+  (when (not @*server-socket*)
+    (dosync (ref-set *server-socket* (create-repl-server 12345 25))))
   (dosync (ref-set *run-file* file))
   (reload)
   (attach-event KeyEvent/VK_R #(reload))
+  (attach-event KeyEvent/VK_E (fn [] (file/save-dialog @(:frame (context)) #(export %))))
   (context/start (context)))
+
+(defn select-file []
+  (file/open-chooser "L5: Presentation with Clojure"
+                     #(do (start %)
+                          (println "Presentation is started. Good Luck!"))))

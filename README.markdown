@@ -39,15 +39,9 @@ See _run.clj_.
 
 ## Export to PDF
 
-    $ lein run export <your-slide.clj>
+Press &lt;E&gt; on the presentation frame.
 
-## Roadmap
-
-* Indicate next slide to the console
-* Command line JAR
-* Cooperation with Twitter
-
-## Author & License
+## License
 
 Copyright (c) 2010 深町英太郎 (E.Fukamachi).  
 Licensed under the MIT License (http://www.opensource.org/licenses/mit-license.php)

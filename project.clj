@@ -6,7 +6,7 @@
             :url "http://www.opensource.org/licenses/mit-license.php"
             :distribution :repo}
   :main L5.core
-  :run-aliases {:presen [L5.core -main], :export [L5.core -main "export"]}
+  :run-aliases {:presen [L5.core -main]}
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [com.itextpdf/itextpdf "5.0.4"

@@ -20,7 +20,8 @@
 
 (defmacro title [& strs]
   `{:attr {:font-size (* 1.3 (:font-size (context)))
-           :text-align :center}
+           :text-align :center
+           :padding {:bottom 20}}
     :body [~@strs]})
 
 (defmacro lines [& strs]

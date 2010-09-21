@@ -68,14 +68,17 @@
                                         (AffineTransform/getTranslateInstance
                                          (double x) (double y)))]
                (.append text-shape outline false)
-               (recur (+ (/ (.getSize font) 2) (.getAscent layout) y) (rest layouts))))))))
+               (recur (+ (/ (.getSize font) 2) ;; line height is 150%
+                         (.getAscent layout)
+                         y)
+                      (rest layouts))))))))
 
 (defn- draw-text-shape [#^Graphics2D g, #^GeneralPath text-shape, affine, padding]
   (.transform text-shape affine)
   (.transform text-shape (AffineTransform/getTranslateInstance (:left padding) (:top padding)))
   (enable-anti-alias g)
   (.fill g text-shape)
-  (+ (.getTranslateY affine) (.. text-shape getBounds height) (:top padding)))
+  (+ (.getTranslateY affine) (.. text-shape getBounds height) (:top padding) (:bottom padding)))
 
 (defn affine-aligned-text [align, bounds, width, height padding]
   (let [[horizontal vertical] align
@@ -110,16 +113,18 @@
                     (affine-aligned-text [(:text-align attr) (:vertical-align attr)]
                                          bounds width height padding)
                     :else (AffineTransform/getTranslateInstance 0 0))]
-        (draw-text-shape g text-shape affine padding))))
+        (let [next-y (draw-text-shape g text-shape affine padding)]
+          (if (nil? (:font-size attr))
+            (- next-y (-> attr :padding :bottom))
+            next-y)))))
 
 (defn- get-next-attr [attr y]
   (let [padding (:padding attr)]
     (assoc attr :padding (assoc padding :top (+ y (or (:top padding) 0))))))
 
 (defn- normalize-attribute [context attr]
-  ;; TODO: refactor
   (merge attr
-         {:padding (merge (:padding context) (:padding attr))
+         {:padding (merge (:padding context) {:top 0 :bottom 0} (:padding attr))
           :font-family (or (:font-family attr) (:font-family context))
           :font-size (if (contains? attr :font-size)
                        (:font-size attr)

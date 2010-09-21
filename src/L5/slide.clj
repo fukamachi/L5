@@ -99,9 +99,9 @@
       (.scale scaling scaling))))
 
 (defn draw [#^Graphics2D g, body, attr]
-  (if (instance? File body) (.drawImage g (ImageIO/read body)
-                                        (:left (:padding attr))
-                                        (:top (:padding attr)))
+  (if (instance? ImageIO body) (.drawImage g body
+                                           (:left (:padding attr))
+                                           (:top (:padding attr)))
       (let [font (Font. (:font-family attr) 0 (or (:font-size attr) 300))
             padding (:padding attr)
             text-shape (build-str-shape g body font (:width attr) (:text-align attr))

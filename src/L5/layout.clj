@@ -2,7 +2,9 @@
   (:use [clojure.contrib.string :only [split trim blank?]]
         L5)
   (:require [clojure.contrib.string :as str]
-            [L5.slide :as slide]))
+            [L5.slide :as slide])
+  (:import [java.io File]
+           [javax.imageio ImageIO]))
 
 (defn normalize-strings [& strs]
   (remove blank?
@@ -20,7 +22,7 @@
   `(with {:padding ~padding} ~@body))
 
 (defn img [file]
-  {:body (java.io.File. file)})
+  {:body (ImageIO/read (File. file))})
 
 (defmacro title [& strs]
   `{:attr {:font-size (* 1.3 (:font-size (context)))

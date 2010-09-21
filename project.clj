@@ -2,7 +2,8 @@
   :author "深町英太郎(E. Fukamachi)"
   :description "Yet Another Presentation with Clojure"
   :url "http://github.com/fukamachi/L5"
-  :run-aliases {:presen [L5.core], :export [L5.export]}
+  :main L5.core
+  :run-aliases {:presen [L5.core -main], :export [L5.core -main "export"]}
   :dependencies [[org.clojure/clojure "1.2.0-master-SNAPSHOT"]
                  [org.clojure/clojure-contrib "1.2.0-SNAPSHOT"]
                  [com.itextpdf/itextpdf "5.0.4"]]

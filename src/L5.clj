@@ -1,6 +1,7 @@
 (ns L5
-  (:use [L5.context :only [make-context]])
-  (:require [L5.slide :as slide]))
+  (:require [L5.context :as context]
+            [L5.export :as export]
+            [L5.slide :as slide]))
 
 (def *context* (ref nil))
 
@@ -12,7 +13,7 @@
 
 (defmacro defcontext [params]
   `(if (not @*context*)
-     (dosync (ref-set *context* (make-context ~params)))))
+     (dosync (ref-set *context* (context/make-context ~params)))))
 
 (defmacro defslides [& slides]
   `(dosync (ref-set (:slides (context)) [~@slides])))
@@ -54,3 +55,12 @@
 
 (defn doelem [elem]
   (slide/normalize-element (context) elem))
+
+(defn export [& [output]]
+  (reload)
+  (export/jframe->pdf (or output "output.pdf") (context))
+  (System/exit 0))
+
+(defn start []
+  (reload)
+  (context/start (context)))

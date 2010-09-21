@@ -1,9 +1,6 @@
 (ns L5.export
-  (:use [L5.context :only [make-context]]
-        [L5.layout])
   (:require [L5.slide :as slide])
-  (:import [java.awt Font]
-           [java.io FileOutputStream]
+  (:import [java.io FileOutputStream]
            [com.itextpdf.text Document Rectangle]
            [com.itextpdf.text.pdf PdfWriter]))
 
@@ -25,9 +22,3 @@
         (.repaint @(:frame context))
         (.newPage doc)))
     (.close doc)))
-
-(load-file "run.clj")
-
-(defn -main [& [filename]]
-  (jframe->pdf (or filename "output.pdf") @L5/*context*)
-  (System/exit 0))

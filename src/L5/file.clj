@@ -7,7 +7,7 @@
 
 (defn- file-dialog [action parent callback filter]
   (let [chooser (JFileChooser.)]
-    (.setCurrentDirectory chooser (File. (System/getProperty "user.home")))
+    (.setCurrentDirectory chooser (.. (File. ".") getAbsoluteFile getParentFile))
     (.setFileFilter chooser filter)
     (when (= JFileChooser/APPROVE_OPTION
              (if (= :save action)

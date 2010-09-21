@@ -122,7 +122,7 @@
          {:padding (merge (:padding context) (:padding attr))
           :font-family (if (contains? attr :font-family)
                          (:font-family attr)
-                         (:font-family context))
+                         (-> context :font .getFamily))
           :font-size (if (contains? attr :font-size)
                        (:font-size attr)
                        (-> context :font .getSize))}))

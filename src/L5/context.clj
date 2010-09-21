@@ -95,7 +95,7 @@
   (doto (JFrame. "L5: Presentation with Clojure")
     (.add panel)
     (.pack)
-    (.setDefaultCloseOperation JFrame/DISPOSE_ON_CLOSE)))
+    (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)))
 
 (defn make-context [params]
   (let [context (build-context params)

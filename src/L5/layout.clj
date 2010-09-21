@@ -16,7 +16,8 @@
 (defmacro with-size [size & body]
   `(with {:font-size ~size} ~@body))
 
-(defn img [file] (java.io.File. file))
+(defn img [file]
+  {:body (java.io.File. file)})
 
 (defmacro title [& strs]
   `{:attr {:font-size (* 1.3 (:font-size (context)))

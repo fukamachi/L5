@@ -1,5 +1,6 @@
 (ns L5
-  (:use [clojure.contrib.string :only [replace-re]])
+  (:use [clojure.contrib.string :only [replace-re]]
+        clojure.contrib.server-socket)
   (:require [L5.context :as context]
             [L5.export :as export]
             [L5.slide :as slide])
@@ -66,6 +67,7 @@
   (System/exit 0))
 
 (defn start [file]
+  (def *server-socket* (create-repl-server 12345 25))
   (dosync (ref-set *run-file* file))
   (reload)
   (attach-event KeyEvent/VK_R #(reload))

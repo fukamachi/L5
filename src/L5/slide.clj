@@ -98,20 +98,20 @@
                              (* scaling (.y bounds)))))
       (.scale scaling scaling))))
 
-(defn draw [#^Graphics2D g, body, attr, width, height]
+(defn draw [#^Graphics2D g, body, attr]
   (if (instance? File body) (.drawImage g (ImageIO/read body)
                                         (:left (:padding attr))
                                         (:top (:padding attr)))
       (let [font (Font. (:font-family attr) 0 (or (:font-size attr) 300))
             padding (:padding attr)
-            text-shape (build-str-shape g body font width (:text-align attr))
+            text-shape (build-str-shape g body font (:width attr) (:text-align attr))
             bounds (.getBounds text-shape)
             affine (cond
                     (nil? (:font-size attr))
-                    (affine-fitted-text bounds width height padding)
+                    (affine-fitted-text bounds (:width attr) (:height attr) padding)
                     (or (:text-align attr) (:vertical-align attr))
                     (affine-aligned-text [(:text-align attr) (:vertical-align attr)]
-                                         bounds width height padding)
+                                         bounds (:width attr) (:height attr) padding)
                     :else (AffineTransform/getTranslateInstance 0 0))]
         (let [next-y (draw-text-shape g text-shape affine padding)]
           (if (nil? (:font-size attr))
@@ -123,12 +123,12 @@
     (assoc attr :padding (assoc padding :top (+ y (or (:top padding) 0))))))
 
 (defn- normalize-attribute [context attr]
-  (merge attr
-         {:padding (merge (:padding context) {:top 0 :bottom 0} (:padding attr))
-          :font-family (or (:font-family attr) (:font-family context))
-          :font-size (if (contains? attr :font-size)
-                       (:font-size attr)
-                       (:font-size context))}))
+  (merge {:width (:width context)
+          :height (:height context)
+          :font-family (:font-family context)
+          :font-size (:font-size context)}
+         attr
+         {:padding (merge (:padding context) {:top 0 :bottom 0} (:padding attr))}))
 
 ;; NOTE: I want to put this at L5.clj, but it refers to this namespace.
 ;;       Need a namespace for utilities?
@@ -144,8 +144,7 @@
           (let [elem (normalize-element context elem)
                 elem-y (draw @(:g context)
                              (:body elem)
-                             (get-next-attr (:attr elem) @y)
-                             (:width context) (:height context))]
+                             (get-next-attr (:attr elem) @y))]
             (dosync
              (ref-set y elem-y))))))))
 

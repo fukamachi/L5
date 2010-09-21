@@ -1,11 +1,13 @@
 (ns L5.file
-  (:import [javax.swing JFrame JLabel JButton JSplitPane JFileChooser]
-           [java.io File]
+  (:import [java.io File]
+           [javax.swing JFrame JLabel JButton JSplitPane JFileChooser]
+           [javax.swing.filechooser FileNameExtensionFilter]
            [java.awt.event ActionListener]))
 
-(defn- file-dialog [action parent callback]
+(defn- file-dialog [action parent callback filter]
   (let [chooser (JFileChooser.)]
     (.setCurrentDirectory chooser (File. (System/getProperty "user.home")))
+    (.setFileFilter chooser filter)
     (when (= JFileChooser/APPROVE_OPTION
              (if (= :save action)
                (.showSaveDialog chooser parent)
@@ -13,10 +15,12 @@
       (callback (.. chooser getSelectedFile getPath)))))
 
 (defn choose-dialog [parent callback]
-  (file-dialog :open parent callback))
+  (file-dialog :open parent callback
+               (FileNameExtensionFilter. "Presentation (.clj .lgo)" (into-array ["clj" "lgo"]))))
 
 (defn save-dialog [parent callback]
-  (file-dialog :save parent callback))
+  (file-dialog :save parent callback
+               (FileNameExtensionFilter. "PDF (.pdf)" (into-array ["pdf"]))))
 
 (defn open-chooser [name callback]
   (let [frame (JFrame. name)

@@ -5,8 +5,7 @@
             [L5.export :as export]
             [L5.slide :as slide]
             [L5.file :as file])
-  (:import [java.awt.event KeyEvent]
-           [javax.swing JOptionPane]))
+  (:import [java.awt.event KeyEvent]))
 
 (def *run-file* (ref nil))
 (def *context* (ref nil))

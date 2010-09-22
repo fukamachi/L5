@@ -87,7 +87,7 @@
 
 (defn affine-fitted-text [bounds, width, height, padding]
   (let [w (- width (:left padding) (:right padding))
-        h (- height (:top padding) (:bottom padding) 22)
+        h (- height (:top padding) (:bottom padding))
         scaling (double (min (/ w (.width bounds))
                              (/ h (.height bounds))))
         affine (AffineTransform.)]
@@ -132,9 +132,11 @@
 
 ;; NOTE: I want to put this at L5.clj, but it refers to this namespace.
 ;;       Need a namespace for utilities?
-(defn normalize-element [context {body :body attr :attr}]
-  {:body (if (vector? body) body [body])
-   :attr (normalize-attribute context attr)})
+(defn normalize-element [context elem]
+  (if (string? elem) (normalize-element context {:body elem})
+      (let [{body :body attr :attr} elem]
+        {:body (if (vector? body) body [body])
+         :attr (normalize-attribute context attr)})))
 
 (defn draw-slide [context idx]
   (let [slides @(:slides context)]
@@ -144,7 +146,9 @@
           (let [elem (normalize-element context elem)
                 elem-y (draw @(:g context)
                              (:body elem)
-                             (get-next-attr (:attr elem) @y))]
+                             (if (= :fixed (-> elem :attr :position))
+                               (:attr elem)
+                               (get-next-attr (:attr elem) @y)))]
             (dosync
              (ref-set y elem-y))))))))
 

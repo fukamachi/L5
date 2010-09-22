@@ -45,4 +45,5 @@
   `{:body [~@strs]
     :attr {:font-size nil
            :text-align :center
+           :position :fixed
            :padding {:top 100 :right 100 :bottom 100 :left 100}}})

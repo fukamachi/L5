@@ -71,9 +71,7 @@
   (reload)
   (go 0)
   (export/jframe->pdf output (context))
-  (go 0)
-  (println "Export Complete!")
-  (JOptionPane/showMessageDialog @(:frame (context)) "Export Complete!"))
+  (go 0))
 
 (defn start [file]
   (when (not @*server-socket*)

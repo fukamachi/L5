@@ -70,6 +70,8 @@
 (defn export [& [output]]
   (reload)
   (go 0)
+  (slide/fullscreen-off (context))
+  (.setSize @(:frame (context)) (:width (context)) (:height (context)))
   (export/jframe->pdf output (context))
   (go 0))
 

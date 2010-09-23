@@ -31,8 +31,9 @@
     :body [~@strs]})
 
 (defmacro lines [& strs]
-  `{:attr {:padding {:top (/ (:font-size (context)) 2)}}
-    :body [~@strs]})
+  (let [line-height (/ (:font-size (context)) 3)]
+    `{:attr {:padding {:top ~line-height :bottom ~line-height}}
+      :body [~@strs]}))
 
 (defmacro item [& strs]
   `(lines ~@(map #(str "・" %) strs)))

@@ -24,7 +24,7 @@
          "オープンソース愛好家"
          "手嶋屋でOpenPNE→アリエルでJava")
    (with-padding {:top 150 :right 0 :bottom 0 :left 500}
-     (with {:position :fixed} (img "sample/redhat.png")))]
+     (with {:position :fixed} (img "redhat.png")))]
   [(title "About Me")
    (item "基本的にLispが好きなんだけど…")]
   [(title "About Me")

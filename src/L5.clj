@@ -39,6 +39,9 @@
     (slide/prev-slide (context)))
   (repaint))
 
+(defn current-slide []
+  (get @(:slides (context)) @(:current (context))))
+
 (defn toggle-fullscreen [] (slide/toggle-fullscreen (context)))
 
 (defn attach-event [code f]

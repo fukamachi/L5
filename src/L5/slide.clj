@@ -123,14 +123,11 @@
   (let [padding (:padding attr)]
     (assoc attr :padding (assoc padding :top (+ y (or (:top padding) 0))))))
 
-(defn map-slice [map & keys]
-  (apply merge (for [[k v] map :when (some #{k} keys)] {k v})))
-
 (defn- normalize-attribute [context attr]
-  (merge (map-slice context
-                    :width :height
-                    :font-family :font-size
-                    :position :text-align)
+  (merge (select-keys context
+                      [:width :height
+                       :font-family :font-size
+                       :position :text-align])
          attr
          {:padding (merge (:padding context)
                           (if (= :fixed (:position attr)) {:top 0 :bottom 0})

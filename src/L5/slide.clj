@@ -3,7 +3,7 @@
            [java.awt.font LineBreakMeasurer TextAttribute TextLayout]
            [java.awt.geom AffineTransform GeneralPath]
            [java.text AttributedString]
-           [javax.imageio ImageIO]
+           [java.awt.image BufferedImage]
            [java.io File]))
 
 (defn- enable-anti-alias [#^Graphics2D g]
@@ -99,9 +99,10 @@
       (.scale scaling scaling))))
 
 (defn draw [#^Graphics2D g, body, attr]
-  (if (instance? ImageIO body) (.drawImage g body
-                                           (:left (:padding attr))
-                                           (:top (:padding attr)))
+  (if (instance? BufferedImage body) (.drawImage g body
+                                                 (int (:left (:padding attr)))
+                                                 (int (:top (:padding attr)))
+                                                 nil)
       (let [font (Font. (:font-family attr) 0 (or (:font-size attr) 300))
             padding (:padding attr)
             text-shape (build-str-shape g body font (:width attr) (:text-align attr))
@@ -122,21 +123,28 @@
   (let [padding (:padding attr)]
     (assoc attr :padding (assoc padding :top (+ y (or (:top padding) 0))))))
 
+(defn map-slice [map & keys]
+  (apply merge (for [[k v] map :when (some #{k} keys)] {k v})))
+
 (defn- normalize-attribute [context attr]
-  (merge {:width (:width context)
-          :height (:height context)
-          :font-family (:font-family context)
-          :font-size (:font-size context)}
+  (merge (map-slice context
+                    :width :height
+                    :font-family :font-size
+                    :position :text-align)
          attr
-         {:padding (merge (:padding context) {:top 0 :bottom 0} (:padding attr))}))
+         {:padding (merge (:padding context)
+                          (if (= :fixed (:position attr)) {:top 0 :bottom 0})
+                          (:padding attr))}))
 
 ;; NOTE: I want to put this at L5.clj, but it refers to this namespace.
 ;;       Need a namespace for utilities?
 (defn normalize-element [context elem]
-  (if (string? elem) (normalize-element context {:body elem})
-      (let [{body :body attr :attr} elem]
-        {:body (if (vector? body) body [body])
-         :attr (normalize-attribute context attr)})))
+  (if (map? elem)
+    (let [{body :body attr :attr} elem]
+      {:body (if (or (vector? body) (instance? BufferedImage body))
+               body [body])
+       :attr (normalize-attribute context attr)})
+    (normalize-element context {:body elem})))
 
 (defn draw-slide [context idx]
   (let [slides @(:slides context)]

@@ -31,6 +31,7 @@
     :body [~@strs]})
 
 (defmacro lines [& strs]
+  ;; FIXME: ignores a top padding in the context
   (let [line-height (/ (:font-size (context)) 3)]
     `{:attr {:padding {:top ~line-height :bottom ~line-height}}
       :body [~@strs]}))

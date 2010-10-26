@@ -165,13 +165,20 @@
   (let [slides @(:slides context)
         idx (+ @(:current context) 1)]
     (when (> (count slides) idx)
-      (println "NEXT")
+      ;; TODO: this indicator is dup with below
+      (println
+       (format "%d / %d %s"
+               (+ 1 idx) (count slides) (:body (first (get slides idx)))))
       (draw-slide context idx)
       (dosync (alter (:current context) inc)))))
 
 (defn prev-slide [context]
-  (let [idx (- @(:current context) 1)]
+  (let [slides @(:slides context)
+        idx (- @(:current context) 1)]
     (when (>= idx 0)
-      (println "PREV")
+      ;; TODO: this indicator is dup with above
+      (println
+       (format "%d / %d %s"
+               (+ 1 idx) (count @(:slides context)) (:body (first (get slides idx)))))
       (draw-slide context idx)
       (dosync (alter (:current context) dec)))))

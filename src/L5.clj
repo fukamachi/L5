@@ -84,6 +84,7 @@
   (reload)
   (attach-event KeyEvent/VK_R #(reload))
   (attach-event KeyEvent/VK_E (fn [] (file/save-dialog @(:frame (context)) #(export %))))
+  (attach-event KeyEvent/VK_Q #(System/exit 0))
   (context/start (context)))
 
 (defn select-file []

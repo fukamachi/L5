@@ -1,5 +1,5 @@
 (ns L5.slide
-  (:import [java.awt Graphics2D Font RenderingHints GraphicsEnvironment]
+  (:import [java.awt Graphics2D Font RenderingHints GraphicsEnvironment Color]
            [java.awt.font LineBreakMeasurer TextAttribute TextLayout]
            [java.awt.geom AffineTransform GeneralPath]
            [java.text AttributedString]
@@ -112,8 +112,11 @@
                     (or (:text-align attr) (:vertical-align attr))
                     (affine-aligned-text [(:text-align attr) (:vertical-align attr)]
                                          bounds (:width attr) (:height attr) padding)
-                    :else (AffineTransform/getTranslateInstance 0 0))]
+                    :else (AffineTransform/getTranslateInstance 0 0))
+            default-color (.getColor g)]
+        (when (:color attr) (.setColor g (:color attr)))
         (let [next-y (draw-text-shape g text-shape affine padding)]
+          (.setColor g default-color)
           (if (nil? (:font-size attr))
             (- next-y (-> attr :padding :bottom))
             next-y)))))

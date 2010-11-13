@@ -32,7 +32,7 @@
 
 (defmacro lines [& strs]
   (let [line-height (/ (:font-size (context)) 3)]
-    `{:attr {:padding {:top ~line-height
+    `{:attr {:padding {:top (+ (-> (context) :padding :top) ~line-height)
                        :bottom ~line-height}}
       :body [~@strs]}))
 

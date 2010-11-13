@@ -50,7 +50,7 @@
    (case vertical
          :bottom (- height (.height bounds) (:top padding))
          :middle (- (/ height 2) (:top padding))
-         0)])
+         (.height bounds))])
 
 (defn- build-str-shape
   ([#^Graphics2D g, strs, font, width] (build-str-shape g strs font width :left))

@@ -6,14 +6,11 @@
    :font-family "Gill Sans"
    :font-size 30})
 
-(defmacro code [& body]
-  `(with-padding {:top 110 :right 0 :bottom 0 :left 70}
-     (lines ~@body)))
-
 (defslides
   [(t "Lisp Poetry")
    (with {:font-size 15
-          :padding {:top 20}}
+          :position :fixed
+          :padding {:top 360}}
      (lines "アリエル・ネットワーク"
             "深町英太郎"
             "2010/08/21"))]
@@ -39,48 +36,48 @@
          "作者は言語学者(Larry Wall)"
          "自然言語を意識した構文と文法")]
   [(title "Example")
-   (code "if ($age < 20) {"
-         "    print \"I love you!\";"
-         "}")]
+   (lines "if ($age < 20) {"
+          "    print \"I love you!\";"
+          "}")]
   [(title "Example")
-   (code "print \"I love you!\" if $age < 20;")]
+   (lines "print \"I love you!\" if $age < 20;")]
   [(title "Example")
-   (code "print \"I love you!\" if $age < 20;"
-         "print \"Ah..\" if not $age < 20;")]
+   (lines "print \"I love you!\" if $age < 20;"
+          "print \"Ah..\" if not $age < 20;")]
   [(title "Example")
-   (code "print \"I love you!\" if $age < 20;"
-         "print \"Ah..\" if not $age < 20;"
-         "print \"I love you!\" while $age < 20;")]
+   (lines "print \"I love you!\" if $age < 20;"
+          "print \"Ah..\" if not $age < 20;"
+          "print \"I love you!\" while $age < 20;")]
   [(t "詩")]
   [(title "Perl Poetry")
    (lines "If you understand, things are such as they are."
           "If you do not understand, things are such as"
           "they are.")]
   [(title "Perl Poetry")
-   (code "if ($you{understand}) {"
+   (lines "if ($you{understand}) {"
          "    @things = qw(such as they are);"
          "}"
          "else {"
          "    @things = qw(such as they are);"
          "}")]
   [(title "Perl Poetry")
-   (code "if ($you{understand}) {"
-         "    @things = @things;"
-         "}"
-         "elsif (not $you{understand}) {"
-         "    @things = @things;"
-         "}")]
+   (lines "if ($you{understand}) {"
+          "    @things = @things;"
+          "}"
+          "elsif (not $you{understand}) {"
+          "    @things = @things;"
+          "}")]
   [(title "Perl Poetry")
-   (code "@things = @things if $you{understand};"
-         "@things = @things if not $you{understand};")]
+   (lines "@things = @things if $you{understand};"
+          "@things = @things if not $you{understand};")]
   [(title "Perl Poetry")
-   (code "@things = ($you{understand})"
-         "      ? @things"
-         "      : @things;")]
+   (lines "@things = ($you{understand})"
+          "      ? @things"
+          "      : @things;")]
   [(title "Perl Poetry")
-   (code "@things = @things;")]
+   (lines "@things = @things;")]
   [(title "Perl Poetry")
-   (code "@things;")]
+   (lines "@things;")]
   [(title "Perl Poetry")
    (lines)]
   [(t "無の" "境地")]
@@ -90,49 +87,49 @@
   [(t "作ってみた")]
   [(title "Lisp Poetry")
    (with-size 25
-     (code ";; What language would you need?"
+     (lines ";; What language would you need?"
            "(defun recommend-language (you)"
            "  (case (what you :need 4 'language)"))]
   [(title "Lisp Poetry")
    (with-size 25
-     (code ";; What language would you need?"
-           "(defun recommend-language (you)"
-           "  (case (what you :need 4 'language)"
-           "    (easy? (use 'lisp))"
-           "    (abstraction? (use 'lisp))"
-           "    (fast? (use 'lisp))"
-           "    (fun? (use 'lisp))))"))]
+     (lines ";; What language would you need?"
+            "(defun recommend-language (you)"
+            "  (case (what you :need 4 'language)"
+            "    (easy? (use 'lisp))"
+            "    (abstraction? (use 'lisp))"
+            "    (fast? (use 'lisp))"
+            "    (fun? (use 'lisp))))"))]
   [(title "Lisp Poetry")
    (with-size 25
-     (code ";; What language would you need?"
-           "(use 'lisp)"))]
+     (lines ";; What language would you need?"
+            "(use 'lisp)"))]
   [(t "(use 'lisp)")]
   [(t "もう一個")]
   [(title "Lisp Poetry II")
    (with-size 25
-     (code ";; What would you like to create?"
-           "(defun recommend-language (you)"
-           "  (case (what you :want 2 'do)"))]
+     (lines ";; What would you like to create?"
+            "(defun recommend-language (you)"
+            "  (case (what you :want 2 'do)"))]
   [(title "Lisp Poetry II")
    (with-size 25
-     (code ";; What would you like to create?"
-           "(defun recommend-language (you)"
-           "  (case (what you :want 2 'do)"
-           "    (AI? (use 'lisp))"
-           "    (compiler? (use 'lisp))"
-           "    (web-app? (use 'lisp))"
-           "    (iphone-app? (use 'lisp))"
-           "    (poem? (use '????))))"))]
+     (lines ";; What would you like to create?"
+            "(defun recommend-language (you)"
+            "  (case (what you :want 2 'do)"
+            "    (AI? (use 'lisp))"
+            "    (compiler? (use 'lisp))"
+            "    (web-app? (use 'lisp))"
+            "    (iphone-app? (use 'lisp))"
+            "    (poem? (use '????))))"))]
   [(title "Lisp Poetry II")
    (with-size 25
-     (code ";; What would you like to create?"
-           "(defun recommend-language (you)"
-           "  (case (what you :want 2 'do)"
-           "    (AI? (use 'lisp))"
-           "    (compiler? (use 'lisp))"
-           "    (web-app? (use 'lisp))"
-           "    (iphone-app? (use 'lisp))"
-           "    (poem? (use 'perl))))"))]
+     (lines ";; What would you like to create?"
+            "(defun recommend-language (you)"
+            "  (case (what you :want 2 'do)"
+            "    (AI? (use 'lisp))"
+            "    (compiler? (use 'lisp))"
+            "    (web-app? (use 'lisp))"
+            "    (iphone-app? (use 'lisp))"
+            "    (poem? (use 'perl))))"))]
   [(t "(use 'lisp)")
    (with {:padding {:top 100 :right 100 :bottom 100 :left 100}
           :font-size 15

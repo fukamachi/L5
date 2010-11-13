@@ -42,11 +42,11 @@
       (fullscreen-off context)
       (fullscreen-on context))))
 
-(defn affine-transform [[horizontal vertical] bounds width height]
+(defn affine-transform [[horizontal vertical] bounds width height padding]
   [(case horizontal
-         :right (- (.width bounds) width)
-         :center 0
-         (.width bounds))
+         :right (- width (:left padding) (:right padding))
+         :center (- (:left padding))
+         0)
    (case vertical
          :bottom (- height (.height bounds))
          :middle (/ (- height (.height bounds)) 2)
@@ -81,9 +81,8 @@
   (+ (.getTranslateY affine) (.. text-shape getBounds height) (:top padding) (:bottom padding)))
 
 (defn affine-aligned-text [align, bounds, width, height padding]
-  (let [[horizontal vertical] align
-        [x y] (affine-transform align bounds width height)]
-    (AffineTransform/getTranslateInstance (- x (:left padding)) y)))
+  (let [[x y] (affine-transform align bounds width height padding)]
+    (AffineTransform/getTranslateInstance x y)))
 
 (defn affine-fitted-text [bounds, width, height, padding]
   (let [w (- width (:left padding) (:right padding))

@@ -12,7 +12,9 @@
 (defslides
   [(t "JavaからClojure"
       "そして夢の世界へ")
-   (with-size 15
+   (with {:font-size 15
+          :position :fixed
+          :padding {:top 360}}
      (lines "アリエル・ネットワーク"
             "深町英太郎"
             "2010/05/18"))]
@@ -140,16 +142,16 @@
           "    (str a b))")
    (item "型ヒントをつけると速度があがるらしい")]
   [(title "Javaのクラスを作る")
-   (item "Javaのクラスも作れる"
-         "名前空間に:gen-classをつけるだけ")
-   (lines "  (ns some.thing :gen-class)")
-   (item "継承も可能")
-   (lines "  (ns some.thing"
+   (lines "・Javaのクラスも作れる"
+          "・名前空間に:gen-classをつけるだけ"
+          "  (ns some.thing :gen-class)"
+          "・継承も可能"
+          "  (ns some.thing"
           "    :gen-class :extends java.io.StringReader)"
           "まああんまり使わないけど")]
   [(title "メソッドのOverrideはProxy")
-   (item "メソッドをOverrideするだけならproxy")
-   (lines "(let [date"
+   (lines "・メソッドをOverrideするだけならproxy"
+          "(let [date"
           "      (proxy [java.util.Date] []"
           "        (getYear [] (+ 1900"
           "                       (proxy-super getYear))))]"

@@ -103,7 +103,7 @@
                                                  (int (:top (:padding attr)))
                                                  nil)
       (let [font (Font. (:font-family attr) 0 (or (:font-size attr) 300))
-            padding (:padding attr)
+            padding (merge-with + (:padding attr) (select-keys (:global-padding attr) [:left :right :bottom]))
             text-shape (build-str-shape g body font (:width attr) (:text-align attr))
             bounds (.getBounds text-shape)
             affine (cond
@@ -118,7 +118,7 @@
         (let [next-y (draw-text-shape g text-shape affine padding)]
           (.setColor g default-color)
           (if (nil? (:font-size attr))
-            (- next-y (-> attr :padding :bottom))
+            (- next-y (-> attr :global-padding :bottom))
             next-y)))))
 
 (defn- get-next-attr [attr y]
@@ -129,7 +129,8 @@
   (merge (select-keys context
                       [:width :height
                        :font-family :font-size
-                       :position :text-align])
+                       :position :text-align
+                       :global-padding])
          attr
          {:padding (merge (:padding context)
                           (if (= :fixed (:position attr)) {:top 0 :bottom 0})
@@ -148,7 +149,7 @@
 (defn draw-slide [context idx]
   (let [slides @(:slides context)]
     (when (and @(:g context) slides (get slides idx))
-      (let [y (ref (-> context :padding :top))]
+      (let [y (ref (-> context :global-padding :top))]
         (doseq [elem (get slides idx)]
           (let [elem (normalize-element context elem)
                 elem-y (draw @(:g context)

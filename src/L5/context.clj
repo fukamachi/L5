@@ -31,7 +31,8 @@
                  :current (ref 0)
                  :width (:width params)
                  :height (:height params)
-                 :padding (:padding params)
+                 :global-padding (or (:global-padding params) (:padding params))
+                 :padding {:top 0, :right 0, :bottom 0, :left 0}
                  :font-size (:font-size params)
                  :font-family (:font-family params)
                  :actions (ref nil)}]

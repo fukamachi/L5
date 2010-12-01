@@ -1,5 +1,5 @@
 (ns L5.slide
-  (:import [java.awt Graphics2D Font RenderingHints GraphicsEnvironment Color]
+  (:import [java.awt Graphics2D Font RenderingHints GraphicsEnvironment Color Point]
            [java.awt.font LineBreakMeasurer TextAttribute TextLayout]
            [java.awt.geom AffineTransform GeneralPath]
            [java.text AttributedString]
@@ -15,18 +15,36 @@
      RenderingHints/KEY_TEXT_ANTIALIASING
      RenderingHints/VALUE_TEXT_ANTIALIAS_ON)))
 
-(defn- get-gdev []
-  (.. GraphicsEnvironment
-      getLocalGraphicsEnvironment
-      getDefaultScreenDevice))
+(defn- gdev-contain? [gdev bounds]
+  (let [gdev-bounds (.. gdev getDefaultConfiguration getBounds)]
+    (some #(.contains gdev-bounds (Point. (first %) (second %)))
+          [[(.getCenterX bounds) (.getCenterY bounds)]
+           [(.getMinX bounds) (.getMinY bounds)]
+           [(.getMaxX bounds) (.getMinY bounds)]
+           [(.getMaxX bounds) (.getMaxY bounds)]
+           [(.getMinX bounds) (.getMaxY bounds)]])))
+
+(defn- get-screen-devices []
+  (.getScreenDevices (GraphicsEnvironment/getLocalGraphicsEnvironment)))
+
+(defn- detect-gdev [frame]
+  (let [bounds (.getBounds frame)]
+    (first
+     (filter #(gdev-contain? % bounds) (get-screen-devices)))))
+
+(defn fullscreen-gdev []
+  (let [gdevs (filter #(.getFullScreenWindow %) (get-screen-devices))]
+    (if (empty? gdevs) nil (first gdevs))))
 
 (defn fullscreen-off [context]
-  (let [frame @(:frame context)]
-    (.hide frame)
-    (.removeNotify frame)
-    (.setUndecorated frame false)
-    (.show frame)
-    (.setFullScreenWindow (get-gdev) nil)))
+  (let [frame @(:frame context)
+        gdev (fullscreen-gdev)]
+    (when gdev
+      (.hide frame)
+      (.removeNotify frame)
+      (.setUndecorated frame false)
+      (.show frame)
+      (.setFullScreenWindow gdev nil))))
 
 (defn fullscreen-on [context]
   (let [frame @(:frame context)]
@@ -34,11 +52,11 @@
     (.removeNotify frame)
     (.setUndecorated frame true)
     (.show frame)
-    (.setFullScreenWindow (get-gdev) frame)))
+    (.setFullScreenWindow (detect-gdev frame) frame)))
 
 (defn toggle-fullscreen [context]
-  (let [gdev (get-gdev)]
-    (if (.getFullScreenWindow gdev)
+  (let [gdev (fullscreen-gdev)]
+    (if gdev
       (fullscreen-off context)
       (fullscreen-on context))))
 

@@ -32,13 +32,13 @@
     (first
      (filter #(gdev-contain? % bounds) (get-screen-devices)))))
 
-(defn fullscreen-gdev []
+(defn get-fullscreen-gdev []
   (let [gdevs (filter #(.getFullScreenWindow %) (get-screen-devices))]
     (if (empty? gdevs) nil (first gdevs))))
 
 (defn fullscreen-off [context]
   (let [frame @(:frame context)
-        gdev (fullscreen-gdev)]
+        gdev (get-fullscreen-gdev)]
     (when gdev
       (.hide frame)
       (.removeNotify frame)
@@ -55,7 +55,7 @@
     (.setFullScreenWindow (detect-gdev frame) frame)))
 
 (defn toggle-fullscreen [context]
-  (let [gdev (fullscreen-gdev)]
+  (let [gdev (get-fullscreen-gdev)]
     (if gdev
       (fullscreen-off context)
       (fullscreen-on context))))
@@ -68,7 +68,7 @@
    (case vertical
          :bottom (- height (.height bounds) (:top padding))
          :middle (- (/ height 2) (:top padding))
-         (.height bounds))])
+         0)])
 
 (defn- build-str-shape
   ([#^Graphics2D g, strs, font, width] (build-str-shape g strs font width :left))

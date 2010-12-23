@@ -14,7 +14,8 @@
                                org.bouncycastle/bcprov-jdk14
                                org.bouncycastle/bctsp-jdk14]]]
   :dev-dependencies [[lein-run "1.0.0-SNAPSHOT"]
-                     [lein-clojars "0.5.0"]]
+                     [lein-clojars "0.5.0"]
+                     [swank-clojure "1.2.1"]]
   :repositories {"clojars" "http://clojars.org/repo"
                  "itextpdf" "http://maven.itextpdf.com/"}
   :uberjar-name "L5.jar")

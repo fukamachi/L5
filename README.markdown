@@ -1,22 +1,31 @@
 # L5 - Yet Another Presentation Tool for Lispers
 
-This application is a presentation tool written in Clojure. You can create slides with S-expression. See _sample.clj_ for example.
+This application is a presentation tool written in Clojure. You can create slides with S-expression. See a sample files under _sample_ directory for example.
 
 ## Installation
 
-You may have to ensure [Leiningen](http://github.com/technomancy/leiningen) is installed before.
+Just download **L5.jar** and run it.
 
-If you are ready, clone this repository and execute <code>lein deps</code>.
+    $ wget http://github.com/downloads/fukamachi/L5/L5.jar
+    $ java -jar L5.jar
 
-    $ git clone git://github.com/fukamachi/L5
-    $ cd L5
-    $ lein deps
+Then a managing window appears.
 
 ## How to use?
 
-This application uses [lein-run](http://github.com/sids/lein-run), a plugin of Leiningen, Thanks sids!
+### Pass a file to JAR
 
-    $ lein run presen <your-slide.clj>
+If JAR is given a file name, load it and start a presentation directory.
+
+    $ java -jar L5.jar sample/introduction-to-clojure.clj
+
+### Run as a script
+
+You hope to start your presentation as just a Clojure script, you should put a expression '(start)' to a foot of your presentation file, additionaly.
+
+    $ clj sample/introduction-to-clojure.clj
+
+## Reload the file
 
 Then the frame appears, press &lt;Right&gt; or &lt;Space&gt; to move to next and &lt;Left&gt; or &lt;Backspace&gt; to back. Press &lt;F5&gt; to toggle fullscreen mode.
 
@@ -35,7 +44,7 @@ You can access to L5 during it running.
 
 ## Write slides
 
-See _run.clj_.
+See a sample files under _sample_ directory for example.
 
 ## Export to PDF
 

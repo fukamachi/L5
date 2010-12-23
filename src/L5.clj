@@ -65,7 +65,9 @@
 (defn doelem [elem]
   (slide/normalize-element (context) elem))
 
-(defn reload [] (load-file @*run-file*))
+(defn reload []
+  (and @*run-file*
+       (load-file @*run-file*)))
 
 (defn go [n]
   (dosync (ref-set (:current (context)) n))
@@ -79,14 +81,18 @@
   (export/jframe->pdf output (context))
   (go 0))
 
-(defn start [file]
+(defn start [& [file]]
   (when (not @*server-socket*)
     (dosync (ref-set *server-socket* (create-repl-server 12345 25))))
-  (dosync (ref-set *run-file* file))
+
+  (if file (dosync (ref-set *run-file* file)))
+
   (reload)
+
   (attach-event KeyEvent/VK_R #(reload))
   (attach-event KeyEvent/VK_E (fn [] (file/save-dialog @(:frame (context)) #(export %) file/pdf-filter)))
   (attach-event KeyEvent/VK_Q #(System/exit 0))
+
   (context/start (context)))
 
 (defn select-file []

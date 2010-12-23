@@ -22,7 +22,9 @@
      (dosync (ref-set *context* (context/make-context ~params)))))
 
 (defmacro defslides [& slides]
-  `(dosync (ref-set (:slides (context)) [~@slides])))
+  `(do
+     (if (not (context)) (defcontext {}))
+     (dosync (ref-set (:slides (context)) [~@slides]))))
 
 (defn- map-set! [obj-map key val]
   (dosync (ref-set (get obj-map key) val)))

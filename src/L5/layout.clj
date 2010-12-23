@@ -21,8 +21,9 @@
 (defmacro with-padding [padding & body]
   `(with {:padding ~padding} ~@body))
 
-(defn img [file]
-  {:body (ImageIO/read (File. (str (.getParent (File. @*run-file*)) "/" file)))})
+(defn img [filename]
+  {:body (ImageIO/read
+          (File. (str (.getParent (File. (or @*run-file* *file*))) "/" filename)))})
 
 (defmacro title [& strs]
   `{:attr {:font-size (* 1.3 (:font-size (context)))

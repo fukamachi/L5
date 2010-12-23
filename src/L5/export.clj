@@ -5,15 +5,18 @@
            [com.itextpdf.text.pdf PdfWriter]
            [javax.swing JDialog JProgressBar]))
 
+;; NOTE: Sometimes Progress bar is captured in the exported PDF.
+;;   I'll disable it currentry.
+;;   See <https://github.com/fukamachi/L5/issues#issue/27> for detail.
 (defn jframe->pdf [filename context]
   (let [len (count @(:slides context))
-        dialog (doto (JDialog. @(:frame context) "Exporting.." true) (.setSize 300 50))
-        progress (doto (JProgressBar. 0 len) (.setStringPainted true))
+        ;dialog (doto (JDialog. @(:frame context) "Exporting.." true) (.setSize 300 50))
+        ;progress (doto (JProgressBar. 0 len) (.setStringPainted true))
         width (:width context)
         height (:height context)
         doc (Document. (Rectangle. width (- height 22)))
         writer (PdfWriter/getInstance doc (FileOutputStream. filename))]
-    (.add dialog progress)
+    ;(.add dialog progress)
     (.start
      (Thread.
       #(do
@@ -26,10 +29,12 @@
               (.dispose g2d)
               (.addTemplate cb tp 0 0))
             (slide/next-slide context)
-            (.setValue progress (+ i 1))
-            (.setString progress (str (int (* (/ (inc i) len) 100)) "%"))
+            ;(.setValue progress (+ i 1))
+            ;(.setString progress (str (int (* (/ (inc i) len) 100)) "%"))
             (.repaint @(:frame context))
             (.newPage doc)))
          (.close doc)
-         (.setVisible dialog false))))
-    (.setVisible dialog true)))
+         ;(.setVisible dialog false)
+         )))
+    ;(.setVisible dialog true)
+    ))

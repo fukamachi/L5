@@ -65,9 +65,7 @@
 (defn doelem [elem]
   (slide/normalize-element (context) elem))
 
-(defn reload []
-  (and @*run-file*
-       (load-file @*run-file*)))
+(defn reload [] (load-file @*run-file*))
 
 (defn go [n]
   (dosync (ref-set (:current (context)) n))
@@ -81,19 +79,22 @@
   (export/jframe->pdf output (context))
   (go 0))
 
-(defn start [& [file]]
-  (when (not @*server-socket*)
-    (dosync (ref-set *server-socket* (create-repl-server 12345 25))))
+(defn start
+  ([] (start *file*))
+  ([file]
+     (when (not @*server-socket*)
+       (dosync (ref-set *server-socket* (create-repl-server 12345 25))))
 
-  (if file (dosync (ref-set *run-file* file)))
+     (dosync (ref-set *run-file* file))
 
-  (reload)
+     (binding [start #()]
+       (reload))
 
-  (attach-event KeyEvent/VK_R #(reload))
-  (attach-event KeyEvent/VK_E (fn [] (file/save-dialog @(:frame (context)) #(export %) file/pdf-filter)))
-  (attach-event KeyEvent/VK_Q #(System/exit 0))
+     (attach-event KeyEvent/VK_R #(reload))
+     (attach-event KeyEvent/VK_E (fn [] (file/save-dialog @(:frame (context)) #(export %) file/pdf-filter)))
+     (attach-event KeyEvent/VK_Q #(System/exit 0))
 
-  (context/start (context)))
+     (context/start (context))))
 
 (defn select-file []
   (file/open-chooser "L5: Presentation with Clojure"

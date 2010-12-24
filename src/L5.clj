@@ -18,7 +18,12 @@
      (if ~'it ~then ~else)))
 
 (defmacro defcontext [params]
-  `(if (not @*context*)
+  `(if (context)
+     (let [current# @(:current (context))
+           frame# @(:frame (context))]
+       (dosync (ref-set *context* (context/make-context (assoc ~params :current current#))))
+       (.setVisible @(:frame (context)) true)
+       (.dispose frame#))
      (dosync (ref-set *context* (context/make-context ~params)))))
 
 (defmacro defslides [& slides]

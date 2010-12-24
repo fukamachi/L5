@@ -28,7 +28,7 @@
                  :background-image (:background-image params)
                  :color (:color params)
                  :background-color (:background-color params)
-                 :current (ref 0)
+                 :current (ref (or (:current params) 0))
                  :width (:width params)
                  :height (:height params)
                  :global-padding (or (:global-padding params) (:padding params))

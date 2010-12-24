@@ -20,3 +20,5 @@
          "箇条書き2")]
   ;; Extra large letters
   [(t "入力")])
+
+(start)

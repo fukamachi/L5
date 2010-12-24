@@ -21,8 +21,6 @@ If JAR is given a file name, load it and start a presentation directory.
 
 ### Run as a script
 
-You hope to start your presentation as just a Clojure script, you should put a expression '(start)' to a foot of your presentation file, additionaly.
-
     $ clj sample/introduction-to-clojure.clj
 
 ## Reload the file

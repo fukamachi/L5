@@ -20,9 +20,10 @@
       (doseq [act actions] (act))
       (.repaint @(:frame context)))))
 
-(defn build-context [params & slides]
-  (let [params (merge default params)
-        context {:g (ref nil)
+(defn build-context [raw-context-params & slides]
+  (let [params (merge default raw-context-params)
+        context {:raw-context-params raw-context-params
+                 :g (ref nil)
                  :frame (ref nil)
                  :slides (ref (or slides []))
                  :background-image (:background-image params)

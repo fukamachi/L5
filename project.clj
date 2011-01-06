@@ -18,4 +18,5 @@
                      [swank-clojure "1.2.1"]]
   :repositories {"clojars" "http://clojars.org/repo"
                  "itextpdf" "http://maven.itextpdf.com/"}
-  :uberjar-name "L5.jar")
+  :uberjar-name "L5.jar"
+  :resources-path "resource")

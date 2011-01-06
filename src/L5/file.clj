@@ -6,6 +6,11 @@
            [java.awt GridLayout]
            [java.awt.event ActionListener]))
 
+(defn- load-resource [name]
+  (let [thr (Thread/currentThread)
+        ldr (.getContextClassLoader thr)]
+    (.getResourceAsStream ldr name)))
+
 (def presen-filter (FileNameExtensionFilter. "Presentation (.clj .lgo)" (into-array ["clj" "lgo"])))
 (def pdf-filter (FileNameExtensionFilter. "PDF (.pdf)" (into-array ["pdf"])))
 
@@ -43,7 +48,7 @@
                  (actionPerformed [e]
                    (save-dialog frame
                                 #(let [file (File. %)]
-                                   (io/copy (File. "skelton.clj") file)
+                                   (io/copy (load-resource "skelton.clj") file)
                                    (open-file file))
                                 presen-filter)))]
     (.addActionListener button action)

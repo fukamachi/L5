@@ -67,7 +67,7 @@
         (.add (JLabel. "<html><p style=\"font-weight: bold; padding-left: 20px;\">Welcome to L5!</p></html>"))
         (.add create-button)
         (.add open-button)
-        (.add (doto (JLabel. "Copyright (c) 2010 深町英太郎")
+        (.add (doto (JLabel. "<html><p style=\"font-size: x-small;\">Copyright (c) 2010-2011 深町英太郎</p></html>")
                 (.setHorizontalAlignment SwingConstants/CENTER)))))
     (doto frame
       (.add panel)

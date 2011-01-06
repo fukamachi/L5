@@ -1,4 +1,4 @@
-(defproject L5 "1.3.0-SNAPSHOT"
+(defproject L5 "1.2.1-SNAPSHOT"
   :author "深町英太郎(E. Fukamachi)"
   :description "Yet Another Presentation with Clojure"
   :url "http://github.com/fukamachi/L5"

@@ -1,5 +1,6 @@
 (ns L5.file
-  (:require [clojure.contrib.io :as io])
+  (:require [clojure.contrib.io :as io]
+            [clojure.contrib.string :as string])
   (:import [java.io File]
            [javax.swing JFrame JPanel JLabel JButton JFileChooser SwingConstants]
            [javax.swing.filechooser FileNameExtensionFilter]
@@ -44,8 +45,8 @@
          (.exec (Runtime/getRuntime)
                 (format "%s %s" editor (.getAbsolutePath file))))))))
 
-(defn- ensure-file-ext [s ext]
-  (let [re (re-pattern (apply format "\\.(%s|%s)$" ext))]
+(defn ensure-file-ext [s ext]
+  (let [re (re-pattern (apply format "\\.(%s)$" (string/join "|" ext)))]
     (if (re-find re s)
       s
       (str s "." (first ext)))))

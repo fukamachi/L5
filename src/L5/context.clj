@@ -106,4 +106,5 @@
 (defn start [context]
   (doto @(:frame context)
     (.repaint)
-    (.setVisible true)))
+    (.setVisible true))
+  (slide/print-info context))

@@ -167,9 +167,6 @@
 (defn current-slide [context]
   (let [slides @(:slides context)
         idx @(:current context)]
-    (println
-     (format "%d / %d %s"
-             (+ 1 idx) (count slides) (:body (first (get slides idx)))))
     (when (and @(:g context) slides (get slides idx))
       (let [y (ref (-> context :global-padding :top))]
         (doseq [elem (get slides idx)]
@@ -182,6 +179,13 @@
             (dosync
              (ref-set y elem-y))))))))
 
+(defn print-info [context]
+  (let [slides @(:slides context)
+        idx @(:current context)]
+    (println
+     (format "%d / %d %s"
+             (+ 1 idx) (count slides) (:body (first (get slides idx)))))))
+
 (defn repaint [context] (.repaint @(:frame context)))
 
 (defn next-slide [context]
@@ -189,11 +193,13 @@
         idx (+ @(:current context) 1)]
     (when (> (count slides) idx)
       (dosync (alter (:current context) inc))
-      (repaint context))))
+      (repaint context)
+      (print-info context))))
 
 (defn prev-slide [context]
   (let [slides @(:slides context)
         idx (- @(:current context) 1)]
     (when (>= idx 0)
       (dosync (alter (:current context) dec))
-      (repaint context))))
+      (repaint context)
+      (print-info context))))

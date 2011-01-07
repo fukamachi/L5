@@ -73,15 +73,16 @@
 
 (defn go [n]
   (dosync (ref-set (:current (context)) n))
-  (repaint))
+  (repaint)
+  (slide/print-info (context)))
 
 (defn export [& [output]]
+  (println "Exporting...")
   (reload)
   (go 0)
   (slide/fullscreen-off (context))
   (.setSize @(:frame (context)) (:width (context)) (:height (context)))
-  (export/jframe->pdf (file/ensure-file-ext output ["pdf"]) (context))
-  (go 0))
+  (export/jframe->pdf (file/ensure-file-ext output ["pdf"]) (context)))
 
 (defn start
   ([] (start *file*))
@@ -102,5 +103,5 @@
 
 (defn select-file []
   (file/open-chooser "L5: Presentation with Clojure"
-                     #(do (start %)
-                          (println "Presentation is started. Good Luck!"))))
+                     #(do (println "Presentation is started. Good Luck!")
+                          (start %))))

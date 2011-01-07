@@ -28,7 +28,7 @@
               (.update @(:frame context) g2d)
               (.dispose g2d)
               (.addTemplate cb tp 0 0))
-            (slide/next-slide context)
+            (dosync (alter (:current context) inc))
             ;(.setValue progress (+ i 1))
             ;(.setString progress (str (int (* (/ (inc i) len) 100)) "%"))
             (.newPage doc)))

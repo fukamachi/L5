@@ -39,13 +39,11 @@
 
 (defn next-slide [& [n]]
   (dotimes [i (or n 1)]
-    (slide/next-slide (context)))
-  (repaint))
+    (slide/next-slide (context))))
 
 (defn prev-slide [& [n]]
   (dotimes [i (or n 1)]
-    (slide/prev-slide (context)))
-  (repaint))
+    (slide/prev-slide (context))))
 
 (defn current-slide []
   (get @(:slides (context)) @(:current (context))))

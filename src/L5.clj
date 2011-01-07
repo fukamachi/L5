@@ -82,7 +82,7 @@
   (go 0)
   (slide/fullscreen-off (context))
   (.setSize @(:frame (context)) (:width (context)) (:height (context)))
-  (export/jframe->pdf output (context))
+  (export/jframe->pdf (file/ensure-file-ext output ["pdf"]) (context))
   (go 0))
 
 (defn start

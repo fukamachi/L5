@@ -17,8 +17,7 @@
 (defn dispatch-event [context keyCode]
   (let [actions (get @(:actions context) keyCode)]
     (when (not (empty? actions))
-      (doseq [act actions] (act))
-      (.repaint @(:frame context)))))
+      (doseq [act actions] (act)))))
 
 (defn build-context [raw-context-params & slides]
   (let [params (merge default raw-context-params)
@@ -84,8 +83,7 @@
                               (dosync
                                (ref-set zoom scale)
                                (ref-set x (/ width-diff 2 scale))
-                               (ref-set y (/ height-diff 2 scale))))
-                            (slide/current-slide context)))]
+                               (ref-set y (/ height-diff 2 scale))))))]
     (doto panel
       (.setFocusable true)
       (.setForeground (:color context))

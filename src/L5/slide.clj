@@ -179,27 +179,23 @@
              (ref-set y elem-y))))))))
 
 (defn current-slide [context]
-  (let [idx @(:current context)]
+  (let [idx @(:current context)
+        slides @(:slides context)]
+      (println
+       (format "%d / %d %s"
+               (+ 1 idx) (count slides) (:body (first (get slides idx)))))
     (draw-slide context idx)))
 
 (defn next-slide [context]
   (let [slides @(:slides context)
         idx (+ @(:current context) 1)]
     (when (> (count slides) idx)
-      ;; TODO: this indicator is dup with below
-      (println
-       (format "%d / %d %s"
-               (+ 1 idx) (count slides) (:body (first (get slides idx)))))
-      (draw-slide context idx)
-      (dosync (alter (:current context) inc)))))
+      (dosync (alter (:current context) inc))
+      (current-slide context))))
 
 (defn prev-slide [context]
   (let [slides @(:slides context)
         idx (- @(:current context) 1)]
     (when (>= idx 0)
-      ;; TODO: this indicator is dup with above
-      (println
-       (format "%d / %d %s"
-               (+ 1 idx) (count @(:slides context)) (:body (first (get slides idx)))))
-      (draw-slide context idx)
-      (dosync (alter (:current context) dec)))))
+      (dosync (alter (:current context) dec))
+      (current-slide context))))

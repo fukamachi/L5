@@ -6,13 +6,16 @@
            [java.awt GridLayout]
            [java.awt.event ActionListener]))
 
+(def presen-file-extensions ["clj" "lgo"])
+(def presen-filter (FileNameExtensionFilter.
+                    (apply format "Presentation (.%s .%s)" presen-file-extensions)
+                    (into-array presen-file-extensions)))
+(def pdf-filter (FileNameExtensionFilter. "PDF (.pdf)" (into-array ["pdf"])))
+
 (defn- load-resource [name]
   (let [thr (Thread/currentThread)
         ldr (.getContextClassLoader thr)]
     (.getResourceAsStream ldr name)))
-
-(def presen-filter (FileNameExtensionFilter. "Presentation (.clj .lgo)" (into-array ["clj" "lgo"])))
-(def pdf-filter (FileNameExtensionFilter. "PDF (.pdf)" (into-array ["pdf"])))
 
 (defn- file-dialog [action parent callback filter]
   (let [chooser (JFileChooser.)]
@@ -25,8 +28,7 @@
       (callback (.. chooser getSelectedFile getPath)))))
 
 (defn choose-dialog [parent callback]
-  (file-dialog :open parent callback
-               (FileNameExtensionFilter. "Presentation (.clj .lgo)" (into-array ["clj" "lgo"]))))
+  (file-dialog :open parent callback presen-filter))
 
 (defn save-dialog [parent callback filter]
   (file-dialog :save parent callback filter))
@@ -42,12 +44,18 @@
          (.exec (Runtime/getRuntime)
                 (format "%s %s" editor (.getAbsolutePath file))))))))
 
+(defn- ensure-file-ext [s ext]
+  (let [re (re-pattern (apply format "\\.(%s|%s)$" ext))]
+    (if (re-find re s)
+      s
+      (str s "." (first ext)))))
+
 (defn- get-create-button [frame]
   (let [button (JButton. "Create")
         action (proxy [ActionListener] []
                  (actionPerformed [e]
                    (save-dialog frame
-                                #(let [file (File. %)]
+                                #(let [file (File. (ensure-file-ext % presen-file-extensions))]
                                    (io/copy (load-resource "skelton.clj") file)
                                    (open-file file))
                                 presen-filter)))]

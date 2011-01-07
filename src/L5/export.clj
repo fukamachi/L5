@@ -31,7 +31,6 @@
             (slide/next-slide context)
             ;(.setValue progress (+ i 1))
             ;(.setString progress (str (int (* (/ (inc i) len) 100)) "%"))
-            (.repaint @(:frame context))
             (.newPage doc)))
          (.close doc)
          ;(.setVisible dialog false)

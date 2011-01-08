@@ -12,8 +12,7 @@
   (let [len (count @(:slides context))
         ;dialog (doto (JDialog. @(:frame context) "Exporting.." true) (.setSize 300 50))
         ;progress (doto (JProgressBar. 0 len) (.setStringPainted true))
-        width (:width context)
-        height (:height context)
+        {width :width height :height} context
         doc (Document. (Rectangle. width (- height 22)))
         writer (PdfWriter/getInstance doc (FileOutputStream. filename))]
     ;(.add dialog progress)

@@ -139,9 +139,8 @@
             (- next-y (-> attr :global-padding :bottom))
             next-y)))))
 
-(defn- get-next-attr [attr y]
-  (let [padding (:padding attr)]
-    (assoc attr :padding (assoc padding :top (+ y (or (:top padding) 0))))))
+(defn- get-next-attr [{padding :padding :as attr} y]
+  (assoc attr :padding (assoc padding :top (+ y (or (:top padding) 0)))))
 
 (defn- normalize-attribute [context attr]
   (merge (select-keys context
@@ -165,11 +164,10 @@
     (normalize-element context {:body elem})))
 
 (defn current-slide [context]
-  (let [slides @(:slides context)
-        idx @(:current context)]
-    (when (and @(:g context) slides (get slides idx))
+  (let [{slides :slides idx :current} context]
+    (when (and @(:g context) @slides (get @slides @idx))
       (let [y (ref (-> context :global-padding :top))]
-        (doseq [elem (get slides idx)]
+        (doseq [elem (get @slides @idx)]
           (let [elem (normalize-element context elem)
                 elem-y (draw @(:g context)
                              (:body elem)
@@ -179,27 +177,21 @@
             (dosync
              (ref-set y elem-y))))))))
 
-(defn print-info [context]
-  (let [slides @(:slides context)
-        idx @(:current context)]
-    (println
-     (format "%d / %d %s"
-             (+ 1 idx) (count slides) (:body (first (get slides idx)))))))
+(defn print-info [{slides :slides idx :current}]
+  (println
+   (format "%d / %d %s"
+           (+ 1 @idx) (count @slides) (:body (first (get @slides @idx))))))
 
-(defn repaint [context] (.repaint @(:frame context)))
+(defn repaint [context]
+  (.repaint @(:frame context))
+  (print-info context))
 
-(defn next-slide [context]
-  (let [slides @(:slides context)
-        idx (+ @(:current context) 1)]
-    (when (> (count slides) idx)
-      (dosync (alter (:current context) inc))
-      (repaint context)
-      (print-info context))))
+(defn next-slide [{slides :slides idx :current :as context}]
+  (when (> (count @slides) (+ 1 @idx))
+    (dosync (alter idx inc))
+    (repaint context)))
 
-(defn prev-slide [context]
-  (let [slides @(:slides context)
-        idx (- @(:current context) 1)]
-    (when (>= idx 0)
-      (dosync (alter (:current context) dec))
-      (repaint context)
-      (print-info context))))
+(defn prev-slide [{idx :current :as context}]
+  (when (>= (- @idx 1) 0)
+    (dosync (alter idx dec))
+    (repaint context)))

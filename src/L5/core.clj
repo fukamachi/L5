@@ -3,7 +3,8 @@
   (:use L5))
 
 (defn -main [& args]
+  (println "Welcome to L5!")
   (if (first args)
     (start (first args))
     (select-file))
-  (println "Welcome to L5!"))
+  nil)
